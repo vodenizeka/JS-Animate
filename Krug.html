@@ -6,6 +6,14 @@
 	<script type="text/javascript">
 		window.onload = function() {
 
+			var button = document.getElementById("button"),
+				num = document.getElementById("num");
+			var slice = 0;
+			button.onclick = function() {
+				slice = parseInt(num.value);	
+				console.log(slice);
+			}
+
 			var canvas = document.createElement("canvas");
 			canvas.width = 400;
 			canvas.height = 400;
@@ -31,7 +39,8 @@
 				lineY = [];
 			var sectionNum = 10,
 				angleDiff = Math.PI / sectionNum,	
-				angle = 0;
+				angle = 0,
+				speed = 2;
 
 			UpdateBackground();
 
@@ -39,48 +48,35 @@
 				return Math.sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1));
 			}
 
-			function Circle(X, Y, endX, endY) {
-				this.x = X;
-				this.y = Y;
-				this.startX = X;
-				this.startY = Y;
-				this.endX = endX;
-				this.endY = endY;
-				this.maxX = X > endX ? X : endX;
-				this.minX = X < endX ? X : endX;
-				this.maxY = Y > endY ? Y : endY;
-				this.minY = Y < endY ? Y : endY;
-				this.vx = (centerX-X)/radius*2;
-				this.vy = (centerY-Y)/radius*2;
+			function Circle(angle) {
+				this.ro = radius;
+				this.dro = -speed;
+				this.angle = angle;
+				this.angle180 = angle + Math.PI;
 				this.radius = 10;
-				this.reverse = false;
+				this.color = "hsla("+Math.random()*360+",90%,50%,0.9)";
 				this.id = circleNum;
 				circles[circleNum] = this;
 				circleNum++;
 			}
-		
+
 			Circle.prototype.draw = function() {
-				this.x += this.vx;
-				this.y += this.vy;
-			
-				//var dist = distance(this.x,this.y,centerX,centerY);
-				if (this.x > this.maxX || this.x < this.minX ||
-					this.y > this.maxY || this.y < this.minY) {
-					if (this.reverse) {
-						this.reverse = false;
-						this.x = this.startX;
-						this.y = this.startY;
-					} else {
-						this.reverse = true;
-						this.x = this.endX;
-						this.y = this.endY;
-					}
-					this.vx *= -1;
-					this.vy *= -1;
+				this.ro += this.dro;
+				if (this.ro <= 0) {
+					this.ro = 0;
+					this.dro *= -1;
+					var tmp = this.angle;
+					this.angle = this.angle180;
+					this.angle180 = tmp;
+				} else if (this.ro >= radius) {
+					this.ro = radius;
+					this.dro *= -1;
 				}
-				c.strokeStyle = "red";
+				var x = Math.sin(this.angle)*this.ro + centerX;
+				var y = Math.cos(this.angle)*this.ro + centerY;
+				c.strokeStyle = this.color; 
 				c.beginPath();
-				c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+				c.arc(x, y, this.radius, 0, 2*Math.PI);
 				c.stroke();
 			}
 
@@ -91,7 +87,7 @@
 				lineX[2*i+1]= Math.sin(angle180)*radius + centerX;
 				lineY[2*i+1]=Math.cos(angle180)*radius + centerY;	
 			
-				new Circle(lineX[2*i], lineY[2*i], lineX[2*i+1], lineY[2*i+1]);
+				new Circle(angle);
 				angle += angleDiff;
 			}
 			function UpdateBackground() {
@@ -116,6 +112,9 @@
 	</script>
 </head>
 <body>
-	
+	<input type="text" name="num" id="num">
+	<br>
+	<input type="button" value="click" id="button">
+	<br>
 </body>
 </html>
