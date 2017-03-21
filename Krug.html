@@ -7,11 +7,14 @@
 		window.onload = function() {
 
 			var button = document.getElementById("button"),
-				num = document.getElementById("num");
-			var slice = 0;
+				num = document.getElementById("num"),
+				speedTxt = document.getElementById("speed");
+			var sectionNum = 1;
 			button.onclick = function() {
-				slice = parseInt(num.value);	
-				console.log(slice);
+				sectionNum = parseInt(num.value);	// != 0 JS doesn't care
+				speed = parseInt(speedTxt.value);
+				circleDelete();
+				circleInit();
 			}
 
 			var canvas = document.createElement("canvas");
@@ -27,14 +30,7 @@
 				circleNum = 0, 
 				lineX = [],
 				lineY = [],
-				sectionNum = 10,
-				angleDiff = Math.PI / sectionNum,	
-				angle = 0,
 				speed = 2;
-
-			function distance(x,y,x1,y1) {
-				return Math.sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1));
-			}
 
 			function Circle(angle) {
 				this.ro = radius;
@@ -68,15 +64,26 @@
 				c.stroke();
 			}
 
-			for (var i = 0; i < sectionNum; i++) {
-				lineX[2*i] = Math.sin(angle)*radius + centerX;
-				lineY[2*i] = Math.cos(angle)*radius + centerY;
-				var angle180 = angle + Math.PI;
-				lineX[2*i+1]= Math.sin(angle180)*radius + centerX;
-				lineY[2*i+1]=Math.cos(angle180)*radius + centerY;	
-			
-				new Circle(angle);
-				angle += angleDiff;
+			function circleInit() {
+				var angle = 0;
+				var angleDiff = Math.PI / sectionNum;	
+				for (var i = 0; i < sectionNum; i++) {
+					lineX[2*i] = Math.sin(angle)*radius + centerX;
+					lineY[2*i] = Math.cos(angle)*radius + centerY;
+					var angle180 = angle + Math.PI;
+					lineX[2*i+1]= Math.sin(angle180)*radius + centerX;
+					lineY[2*i+1]=Math.cos(angle180)*radius + centerY;	
+				
+					new Circle(angle);
+					angle += angleDiff;
+				}
+			}
+
+			function circleDelete() {
+				for (var i = 0; i < circleNum; i++) {
+					delete circles[i];
+				}
+				circleNum = 0;
 			}
 
 			function BigCircle() {
@@ -110,7 +117,13 @@
 	</script>
 </head>
 <body>
+	<label> Number of sections: </label>
+	<br>
 	<input type="text" name="num" id="num">
+	<br>
+	<label> Speed: </label>
+	<br>
+	<input type="text" name="speed" id="speed">
 	<br>
 	<input type="button" value="click" id="button">
 	<br>
