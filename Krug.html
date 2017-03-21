@@ -22,27 +22,15 @@
 			var c = canvas.getContext("2d");
 			var centerX = canvas.width / 2,
 				centerY = canvas.height / 2,
-				radius = 150;
-
-			function BigCircle() {
-				c.fillStyle = "black";
-				c.fillRect(0,0,canvas.width,canvas.height);
-				c.strokeStyle = "white";
-				c.beginPath();
-				c.arc(centerX, centerY, radius, 0, 2* Math.PI, true);
-				c.stroke();
-			}
-
-			var circles = {};		
-			var circleNum = 0; 
-			var lineX = [],
-				lineY = [];
-			var sectionNum = 10,
+				radius = 150,
+				circles = {},		
+				circleNum = 0, 
+				lineX = [],
+				lineY = [],
+				sectionNum = 10,
 				angleDiff = Math.PI / sectionNum,	
 				angle = 0,
 				speed = 2;
-
-			UpdateBackground();
 
 			function distance(x,y,x1,y1) {
 				return Math.sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1));
@@ -90,6 +78,16 @@
 				new Circle(angle);
 				angle += angleDiff;
 			}
+
+			function BigCircle() {
+				c.fillStyle = "black";
+				c.fillRect(0,0,canvas.width,canvas.height);
+				c.strokeStyle = "white";
+				c.beginPath();
+				c.arc(centerX, centerY, radius, 0, 2* Math.PI, true);
+				c.stroke();
+			}
+
 			function UpdateBackground() {
 				BigCircle();
 				c.strokeStyle = "white";
