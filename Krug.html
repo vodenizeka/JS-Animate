@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Krug</title>
+	<script type="text/javascript">
+		window.onload = function() {
+
+			var canvas = document.createElement("canvas");
+			canvas.width = 400;
+			canvas.height = 400;
+			document.body.appendChild(canvas);
+
+			var c = canvas.getContext("2d");
+			var centerX = canvas.width / 2,
+				centerY = canvas.height / 2,
+				radius = 150;
+
+			function BigCircle() {
+				c.fillStyle = "black";
+				c.fillRect(0,0,canvas.width,canvas.height);
+				c.strokeStyle = "white";
+				c.beginPath();
+				c.arc(centerX, centerY, radius, 0, 2* Math.PI, true);
+				c.stroke();
+			}
+
+			var circles = {};		
+			var circleNum = 0; 
+			var lineX = [],
+				lineY = [];
+			var sectionNum = 10,
+				angleDiff = Math.PI / sectionNum,	
+				angle = 0;
+
+			UpdateBackground();
+
+			function distance(x,y,x1,y1) {
+				return Math.sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1));
+			}
+
+			function Circle(X, Y, endX, endY) {
+				this.x = X;
+				this.y = Y;
+				this.startX = X;
+				this.startY = Y;
+				this.endX = endX;
+				this.endY = endY;
+				this.maxX = X > endX ? X : endX;
+				this.minX = X < endX ? X : endX;
+				this.maxY = Y > endY ? Y : endY;
+				this.minY = Y < endY ? Y : endY;
+				this.vx = (centerX-X)/radius*2;
+				this.vy = (centerY-Y)/radius*2;
+				this.radius = 10;
+				this.reverse = false;
+				this.id = circleNum;
+				circles[circleNum] = this;
+				circleNum++;
+			}
+		
+			Circle.prototype.draw = function() {
+				this.x += this.vx;
+				this.y += this.vy;
+			
+				//var dist = distance(this.x,this.y,centerX,centerY);
+				if (this.x > this.maxX || this.x < this.minX ||
+					this.y > this.maxY || this.y < this.minY) {
+					if (this.reverse) {
+						this.reverse = false;
+						this.x = this.startX;
+						this.y = this.startY;
+					} else {
+						this.reverse = true;
+						this.x = this.endX;
+						this.y = this.endY;
+					}
+					this.vx *= -1;
+					this.vy *= -1;
+				}
+				c.strokeStyle = "red";
+				c.beginPath();
+				c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+				c.stroke();
+			}
+
+			for (var i = 0; i < sectionNum; i++) {
+				lineX[2*i] = Math.sin(angle)*radius + centerX;
+				lineY[2*i] = Math.cos(angle)*radius + centerY;
+				var angle180 = angle + Math.PI;
+				lineX[2*i+1]= Math.sin(angle180)*radius + centerX;
+				lineY[2*i+1]=Math.cos(angle180)*radius + centerY;	
+			
+				new Circle(lineX[2*i], lineY[2*i], lineX[2*i+1], lineY[2*i+1]);
+				angle += angleDiff;
+			}
+			function UpdateBackground() {
+				BigCircle();
+				c.strokeStyle = "white";
+				for (var i = 0; i < sectionNum; i++) {
+					c.beginPath();
+					c.moveTo(lineX[2*i], lineY[2*i]);
+					c.lineTo(lineX[2*i+1], lineY[2*i+1]);
+					c.stroke();
+				}
+			}
+			
+			setInterval(function() {
+				UpdateBackground();
+				for (var i = 0; i < circleNum; i++) {
+					circles[i].draw();
+				}
+			}, 30);
+		}
+
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
