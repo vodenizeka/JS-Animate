@@ -7,8 +7,8 @@
 		window.onload = function() {
 
 			var canvas = document.createElement("canvas"); 	
-			canvas.width = 800;
-			canvas.height = 800;
+			canvas.width = 600;
+			canvas.height = 600;
 
 			document.body.appendChild(canvas);
 			var c = canvas.getContext("2d");
@@ -33,30 +33,33 @@
 
 				}
 
+			function checkEdge(ball) {
+				var rightEdge = canvas.width - ball.radius,
+						leftEdge = ball.radius,
+						topEdge = ball.radius,
+						bottomEdge = canvas.height - ball.radius;
+				if (ball.x >= rightEdge) {
+					ball.x = rightEdge;
+					ball.vx *= -1;
+				}
+				if (ball.x <= leftEdge) {
+					ball.x = leftEdge;
+					ball.vx *= -1;
+				}
+				if (ball.y <= topEdge) {
+					ball.y = topEdge;
+					ball.vy *= -1;
+				}
+				if (ball.y >= bottomEdge) {
+					ball.y = bottomEdge;
+					ball.vy *= -1;
+				}
+			}
+
 			Ball.prototype.draw = function() {
 					this.x += this.vx;
-					this.y += this.vy;
-					
-					var rightEdge = canvas.width - this.radius,
-						leftEdge = this.radius,
-						topEdge = this.radius,
-						bottomEdge = canvas.height - this.radius;
-					if (this.x >= rightEdge) {
-						this.x = rightEdge;
-						this.vx *= -1;
-					}
-					if (this.x <= leftEdge) {
-						this.x = leftEdge;
-						this.vx *= -1;
-					}
-					if (this.y <= topEdge) {
-						this.y = topEdge;
-						this.vy *= -1;
-					}
-					if (this.y >= bottomEdge) {
-						this.y = bottomEdge;
-						this.vy *= -1;
-					}
+					this.y += this.vy;					
+					checkEdge(this);
 
 					c.fillStyle = this.color;
 					c.strokeStyle = this.color;
