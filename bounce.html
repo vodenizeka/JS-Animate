@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bounce</title>
+	<script type="text/javascript">
+		window.onload = function() {
+			document.getElementById("mrs").innerHTML = "MRS BRE";
+			var canvas = document.createElement("canvas"); 	
+			canvas.width = 400;
+			canvas.height = 400;
+			document.body.appendChild(canvas);
+			var c = canvas.getContext("2d");
+			
+			c.fillStyle = "black";
+			c.fillRect(0, 0, canvas.width, canvas.height);
+
+			var balls = {},
+				setBallNum = 10,
+				ballNum = 0;
+
+			function Ball() {
+				this.x = 0;
+				this.y = 0;
+				this.vx = 1;
+				this.vy = 0;
+				this.radius = 10;
+				ballNum++;
+
+				this.update = function() {
+					this.x += this.vx;
+					this.y += this.vy;
+				}
+				this.draw = function() {
+					fillStyle = "blue";
+					strokeStyle = "blue";
+					c.beginPath();
+					c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+					c.stroke();
+					c.fill();
+				}
+			}
+
+			initBalls() {
+				for (var i = 0; i < setBallNum; i++) {
+					balls[i] = new Ball();
+				}
+			}
+
+			setInterval(function() {
+				for (var i = 0; i < ballNum; i++) {
+					balls[i].update();
+					balls[i].draw();
+				}
+			}, 30);
+		}
+	</script>
+</head>
+<body>
+	<p id="mrs">hello</p>	
+</body>
+</html>
