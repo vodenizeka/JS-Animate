@@ -3,6 +3,33 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Bounce</title>
+	<style type="text/css">
+		body {
+			background-color: orange;
+		}
+		#opis {
+			font-size: 18px;
+			position: absolute;
+			top : 550px;
+			margin-right: 200px;
+			background-color: gray;
+			padding: 30px;
+		}
+		.func {
+			font-size: 20px;
+			color: DarkGreen;
+			font-weight: bold;
+		}
+		.var {
+			font-size: 20px;
+			color: blue;
+			font-weight: bold;
+		}
+		code {
+			font-size: 18px;
+			color: Purple;
+		}
+	</style>
 	<script type="text/javascript">
 		window.onload = function() {
 			
@@ -38,10 +65,18 @@
 				this.y = Math.random() * (canvas.height - this.radius);
 				this.vx = Math.random() * maxSpeed;
 				this.vy = Math.random() * maxSpeed;
-				this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
+		var button = document.getElementById("submit");
+			button.onclick = function() {
+				deleteBalls();
+				var num = document.getElementById("ball").value;
+				setBallNum = parseInt(num);
+				var speed = document.getElementById("speed").value; 
+				maxSpeed = speed;
+				initBalls();
+			}
+			this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
 				balls[ballNum] = this;
 				ballNum++;
-
 				}
 
 			function checkEdge(ball) {
@@ -158,15 +193,270 @@
 	</script>
 </head>
 <body>
-	<label>Number of balls: </label>
-	<br>
-	<input type="text" id="ball">
-	<br>
-	<label> Max speed:</label>
-	<br>
-	<input type="text" id="speed">
-	<br>
-	<input type="button" value="simulate" id="submit">
-	<br>
+	<div>
+		<label>Number of balls: </label>
+		<br>
+		<input type="text" id="ball">
+		<br>
+		<label> Max speed:</label>
+		<br>
+		<input type="text" id="speed">
+		<br>
+		<input type="button" value="simulate" id="submit">
+	</div>
+	<div id="opis">
+		<p> K&#x00F4;d se moze prikazati desnim klikom,
+		<i>View Page Source</i>.
+		<br> Sledi kratak opis osnovnih funkcija. </p>
+		<p> Lopte definisemo na sledeci nacin:
+		<br>
+		<code>
+		<pre>
+		function Ball() {
+			this.radius = Math.random()*10 + 5;
+			this.mass = this.radius;
+			this.x = Math.random() * (canvas.width - this.radius);
+			this.y = Math.random() * (canvas.height - this.radius);
+			this.vx = Math.random() * maxSpeed;
+			this.vy = Math.random() * maxSpeed;
+			this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
+			balls[ballNum] = this;
+			ballNum++;
+		}
+		</pre>
+		</code>
+		Gde su x i y koordinate centra lopte, a vx i vy komponente
+		njene brzine po x i y osi. Pocetak koordinatnog sistema se nalazi
+		u gornjem levom uglu (0, 0).
+		<br><br>
+		Platno po kome crtamo, definisemo na sledeci nacin:
+		<code>
+		<pre>
+            var canvas = document.createElement("canvas"); 	
+                canvas.width = 400;
+                canvas.height = 400;
+		</pre>
+		</code>
+		Pocetne koordinate lopte postavljamo tako da se nalaze unutar naseg platna.
+		<span class="func">	Math.random() </span> vraca broj iz intervala [0,1). 
+		<br>
+		U narednom delu inicijalizujemo pocetne parametre:
+		<code>
+		<pre>
+        var balls = {},
+            setBallNum = 15,
+            ballNum = 0,
+            maxSpeed = 5;
+		</pre>
+		</code>
+		Gde nam je <span class="var"> setBallNum </span> ukupan broj lopti koje zelimo,
+		<span class="var"> ballNum </span> broj lopti koje smo inicijalizovali, 
+		<span class="var"> balls </span> niz u kome cuvamo napravljene lopte.
+		<br>
+		<br>
+		Sada smo obezbedili sve pocetne uslove i zelimo da nateramo lopte da
+		se krecu po nasem platnu. Prvo moramo da inicijalizujemo lopte:
+		<code>
+		<pre>
+			function initBalls() {
+				for (var i = 0; i &lt; setBallNum; i++) {
+					balls[i] = new Ball();
+				}
+			}	
+		</pre>
+		</code>
+		Na svakih 30milisekundi obojicemo platno u crnu boju, promenicemo koordinate
+		svake lopte <span class="var"> (x,y) </span> dodavajuci im komponente brzine
+		<span class="var"> (vx, vy) </span>, i nacrtacemo svaku loptu na njenim
+		novim koordinatama.
+		<code>
+		<pre>
+		setInterval(function() {
+			c.fillStyle = "black";
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			calculateCollisions();    // zanemarimo ovu liniju
+			for (var i = 0; i &lt; ballNum; i++) {
+				balls[i].draw();
+			}
+		}, 30);	
+		</pre>
+		</code>
+		Zanemarimo na trenutak <u>trecu</u> liniju ove funkcije.
+		<br>
+		Funkcija <span class="func"> draw </span> izgleda ovako:
+		<code>
+		<pre>
+		Ball.prototype.draw = function() {
+			this.x += this.vx;
+			this.y += this.vy;					
+			checkEdge(this);
+
+			c.fillStyle = this.color;    // boja unutrasnjosti kruga
+			c.strokeStyle = this.color;  // boja ivice kruga
+			c.beginPath();               // zapocinje opisivanje 
+			c.arc(this.x, this.y, this.radius, 0, 2*Math.PI); // opisuje krug
+			c.stroke();                  // crta krug
+			c.fill();                    // boji unutrasnjost kruga
+		};
+		</pre>
+		</code>
+		Prve dve linije menjaju koordinate centra lopte.
+		Naredna funkcija <span class="func"> checkEdge() </span> proverava
+		da li je lopta na granici ili van granice platna. Ukoliko jeste,
+		vraca loptu na granicu (ne dozvoljavamo joj da napusti platno) i menja
+		komponente njene brzine, u zavisnosti od ivice platna na
+		kojoj se nalazi, na sledeci nacin:
+		<code>
+		<pre>
+        function checkEdge(ball) {
+            var rightEdge = canvas.width - ball.radius,
+                leftEdge = ball.radius,
+                topEdge = ball.radius,
+                bottomEdge = canvas.height - ball.radius;
+            if (ball.x &gt;= rightEdge) {
+	            ball.x = rightEdge;
+	            ball.vx *= -1;
+            }
+            if (ball.x &lt;= leftEdge) {
+	            ball.x = leftEdge;
+	            ball.vx *= -1;
+            }
+            if (ball.y &lt;= topEdge) {
+            	ball.y = topEdge;
+            	ball.vy *= -1;
+            }
+            if (ball.y &gt;= bottomEdge) {
+	            ball.y = bottomEdge;
+	            ball.vy *= -1;
+            }
+        }
+		</pre>
+		</code>
+		Ovim smo omogucili loptama da se odbijaju od ivice platna
+		bez gubitka brzine (apsolutno elasticno).
+		Ostalo nam je jos da simuliramo sudar dve lopte, pa se vracamo
+		na onu <u>trecu</u> liniju.
+		<br>
+		<br>
+		Funkcija <span class="func">calculateCollisions()</span> prolazi
+		kroz niz lopti i za svaku loptu proverava da li se sudarila
+		sa loptama koje su desno u nizu, u odnosu na nju. Ovim izbegavamo duple 
+		provere (A sudar? B, B sudar? A). Sudar se dogodio ukoliko je razdaljina
+		izmedju centara dve lopte manja ili jednaka od zbira njihovih
+		poluprecnika.
+		<code>
+		<pre>
+		function calculateCollisions() {
+			for (var i = 0; i &lt; ballNum-1; i++) {
+				for (var j = i +1; j &lt; ballNum; j++) {
+					if (collide(balls[i], balls[j]))
+						updateVelocity(balls[i], balls[j]);
+				}
+			}
+		}
+
+		function collide(ball1, ball2) {
+			var tmp;
+			if ((tmp = distance(ball1.x, ball1.y, ball2.x, ball2.y))
+				&lt;= ball1.radius + ball2.radius) {
+				var vektor = [ball2.x - ball1.x, ball2.y - ball1.y],
+				    distanceDiff = ball1.radius + ball2.radius - tmp,
+				    norm = [vektor[0]/tmp, vektor[1]/tmp];
+				ball1.x -= norm[0] * distanceDiff/2;
+				ball1.y -= norm[1] * distanceDiff/2;
+				ball2.x += norm[0] * distanceDiff/2;
+				ball2.y += norm[1] * distanceDiff/2;
+				
+				return true;
+			}
+			return false;
+		}
+		</pre>
+		</code>
+		U telu IF petlje funkcije <span class="func"> collide()</span> 
+		(izvrsava se kada je doslo do sudara) moramo da pomerimo x i y 
+		koordinate obe lopte tako da razdaljina izmedju njihovih centara
+		bude jednaka tacno zbiru njihovih poluprecnika, jer ne zelimo da
+		se lopte preklapaju(moze doci do nepredvidjenog ponasanja).
+		<br>
+		Uzmemo vektor koji pocinje u centru prve lopte, a zavrsava se u 
+		centru druge, normiramo ga(dobijemo jedinicni vektor) i transliramo
+		centre za polovinu razlike zbira poluprecnika i trenutne
+		udaljenosti(centar prve lopte suprotno od pravca vektora, a centar
+		druge u pravcu vektora).
+		<br>
+		<br>
+		Funkcija <span class="func"> updateVelocity() </span> racuna
+		promenu brzina obe lopte u pravcima x i y, nakon sudara.
+		Ako razlozimo brzine kretanja obe lopte na pravac koji prolazi
+		kroz centar obe lopte(<b>p</b>)  i na pravac normalan na njega(<b>q</b>),
+		komponente brzine u pravcu <b>q</b> ostaju iste pre i posle sudara.
+		Tako da samo racunamo promenu komponenata u pravcu <b>p</b>.
+		<br>
+		Sa <span class="var"> u1 </span> obelezavamo komponentu brzine
+		prve lopte u pravcu <b>p</b> , a sa <span class="var"> u2 </span> 
+		komponentu brzine druge lopte u istom pravcu.
+		Kako vaze pravila na ovom 
+		<a href="https://en.wikipedia.org/wiki/Elastic_collision">linku</a>
+		dobijamo sledece formule:
+		<code>
+		<pre>
+		function updateVelocity(ball1, ball2) {
+				var vektor = [ball2.x - ball1.x, ball2.y - ball1.y],
+					intensity = ball1.radius + ball2.radius,
+					norm = [vektor[0]/intensity, vektor[1]/intensity],
+					u1 = ball1.vx * norm[0] + ball1.vy * norm[1],   // skalarno mnozenje 
+					u2 = ball2.vx * norm[0] + ball2.vy * norm[1],   // skalarno mnozenje
+					v1 = (u1*(ball1.mass - ball2.mass) + 2*ball2.mass*u2) /
+						 (ball1.mass + ball2.mass),             
+					v2 = (u2*(ball2.mass - ball1.mass) + 2*ball1.mass*u1) /
+						 (ball1.mass + ball2.mass);             	
+				var resultX1 = norm[0]*(v1-u1),
+					resultY1 = norm[1]*(v1-u1),
+					resultX2 = norm[0]*(v2-u2),
+					resultY2 = norm[1]*(v2-u2);
+				ball1.vx += resultX1;
+				ball1.vy += resultY1;
+				ball2.vx += resultX2;
+				ball2.vy += resultY2;
+		}
+		</pre>
+		</code>
+		Gde su <span class="var"> v1 </span> i <span class="var"> v2 </span>
+		komponente brzine prve i druge lopte u pravcu <b>p</b>
+		nakon sudara. Vektor <span class="var"> norm </span> je jedinicni
+		vektor u pravcu <b>p</b>. Nakon izracunavanja novih vrednosti,
+		projektujemo promene na pravce x i y (skalarnim mnozenjem) i 
+		menjamo komponente brzina za obe lopte u pravcima x i y.
+		<br>
+		<br>
+		Da bismo omogucili dinamicko menjanje parametara, dovoljno je
+		da klikom na dugme <i>simulate</i> omogucimo brisanje svih
+		lopti i inicijalizaciju novih lopti sa novim parametrima.
+		To radimo ovako:
+		<code>
+		<pre>
+		function deleteBalls() {
+				for (var i = 0; i &lt; setBallNum; i++) {
+					delete balls[i];
+				}	
+				ballNum = 0;
+			}	
+
+		var button = document.getElementById("submit");
+			button.onclick = function() {
+				deleteBalls();
+				var num = document.getElementById("ball").value;
+				setBallNum = parseInt(num);
+				var speed = document.getElementById("speed").value; 
+				maxSpeed = speed;
+				initBalls();
+			}
+
+		</pre>
+		</code>
+		</p>
+
+	</div>
 </body>
 </html>
