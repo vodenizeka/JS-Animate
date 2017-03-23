@@ -65,16 +65,7 @@
 				this.y = Math.random() * (canvas.height - this.radius);
 				this.vx = Math.random() * maxSpeed;
 				this.vy = Math.random() * maxSpeed;
-		var button = document.getElementById("submit");
-			button.onclick = function() {
-				deleteBalls();
-				var num = document.getElementById("ball").value;
-				setBallNum = parseInt(num);
-				var speed = document.getElementById("speed").value; 
-				maxSpeed = speed;
-				initBalls();
-			}
-			this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
+				this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
 				balls[ballNum] = this;
 				ballNum++;
 				}
