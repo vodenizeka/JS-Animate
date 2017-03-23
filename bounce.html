@@ -5,7 +5,7 @@
 	<title>Bounce</title>
 	<script type="text/javascript">
 		window.onload = function() {
-
+			
 			var canvas = document.createElement("canvas"); 	
 			canvas.width = 400;
 			canvas.height = 400;
@@ -20,6 +20,16 @@
 				setBallNum = 15,
 				ballNum = 0,
 				maxSpeed = 5;
+
+			var button = document.getElementById("submit");
+			button.onclick = function() {
+				deleteBalls();
+				var num = document.getElementById("ball").value;
+				setBallNum = parseInt(num);
+				var speed = document.getElementById("speed").value; 
+				maxSpeed = speed;
+				initBalls();
+			}
 
 			function Ball() {
 				this.radius = Math.random()*10 + 5;
@@ -127,6 +137,13 @@
 				}
 			}
 
+			function deleteBalls() {
+				for (var i = 0; i < setBallNum; i++) {
+					delete balls[i];
+				}	
+				ballNum = 0;
+			}	
+
 			initBalls();
 
 			setInterval(function() {
@@ -141,6 +158,16 @@
 	</script>
 </head>
 <body>
-	<p id="mrs">hello</p>	
+	<label>Number of balls: </label>
+	<br>
+	<input type="text" id="ball">
+	<br>
+	<label> Max speed:</label>
+	<br>
+	<input type="text" id="speed">
+	<br>
+	<label> </label>
+	<br>
+	<input type="button" value="simulate" id="submit">
 </body>
 </html>
