@@ -10,7 +10,7 @@
 		#opis {
 			font-size: 18px;
 			position: absolute;
-			top : 550px;
+			top : 600px;
 			margin-right: 200px;
 			background-color: gray;
 			padding: 30px;
@@ -33,6 +33,20 @@
 	<script type="text/javascript">
 		window.onload = function() {
 			
+			var hide = document.getElementById("hide");
+			hide.onclick = function() {
+				var desc = document.getElementById("opis");
+				
+				if (desc.style.display == "none") {
+					desc.style.display = "block";
+					hide.value = "hide";
+				}
+				else {
+					desc.style.display = "none";
+					hide.value = "show";
+				}
+			}
+			
 			var canvas = document.createElement("canvas"); 	
 			canvas.width = 400;
 			canvas.height = 400;
@@ -46,15 +60,31 @@
 			var balls = {},
 				setBallNum = 15,
 				ballNum = 0,
-				maxSpeed = 5;
+				maxSpeed = 5,
+				visualMode = "RANDOM";
+				speedSum = 0,
+				speedAvg = 0;
 
 			var button = document.getElementById("submit");
+			
+			initBalls();
+
+			setInterval(function() {
+				c.fillStyle = "black";
+				c.fillRect(0, 0, canvas.width, canvas.height);
+				calculateCollisions();
+				for (var i = 0; i < ballNum; i++) {
+					balls[i].draw();
+				}
+			}, 30);
+
 			button.onclick = function() {
 				deleteBalls();
 				var num = document.getElementById("ball").value;
 				setBallNum = parseInt(num);
 				var speed = document.getElementById("speed").value; 
 				maxSpeed = speed;
+				visualMode = document.getElementById("color").value;
 				initBalls();
 			}
 
@@ -65,7 +95,9 @@
 				this.y = Math.random() * (canvas.height - this.radius);
 				this.vx = Math.random() * maxSpeed;
 				this.vy = Math.random() * maxSpeed;
-				this.color = "hsla("+ Math.random()*360 +",100%,50%,0.9)";
+				this.color = "hsla("+ Math.random()*360 +",100%,50%,1)";
+				this.intensity = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+				speedSum += this.intensity;
 				balls[ballNum] = this;
 				ballNum++;
 				}
@@ -120,6 +152,8 @@
 				ball1.vy += resultY1;
 				ball2.vx += resultX2;
 				ball2.vy += resultY2;
+				ball1.intensity = Math.sqrt(ball1.vx*ball1.vx + ball1.vy*ball1.vy);
+				ball2.intensity = Math.sqrt(ball2.vx*ball2.vx + ball2.vy*ball2.vy);
 			}
 
 			function collide(ball1, ball2) {
@@ -147,20 +181,27 @@
 					this.x += this.vx;
 					this.y += this.vy;					
 					checkEdge(this);
-
-					c.fillStyle = this.color;
-					c.strokeStyle = this.color;
+					var visual = this.color;
+					if (visualMode === "SPEED") {
+						var relSpeed = (this.intensity - speedAvg)/speedAvg;
+						if (relSpeed > 1) {
+							relSpeed = 1;	
+						}
+						visual = "hsla(" + (120 - 120*relSpeed) + ",100%, 50%, 1)";
+					}
+					c.fillStyle = visual;
+					c.strokeStyle = visual;
 					c.beginPath();
 					c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
 					c.stroke();
 					c.fill();
-				};
-
+			};
 
 			function initBalls() {
 				for (var i = 0; i < setBallNum; i++) {
 					balls[i] = new Ball();
 				}
+				speedAvg = speedSum / ballNum;
 			}
 
 			function deleteBalls() {
@@ -168,19 +209,10 @@
 					delete balls[i];
 				}	
 				ballNum = 0;
+				speedSum = 0;
 			}	
 
-			initBalls();
-
-			setInterval(function() {
-				c.fillStyle = "black";
-				c.fillRect(0, 0, canvas.width, canvas.height);
-				calculateCollisions();
-				for (var i = 0; i < ballNum; i++) {
-					balls[i].draw();
-				}
-			}, 30);
-		}
+					}
 	</script>
 </head>
 <body>
@@ -193,7 +225,16 @@
 		<br>
 		<input type="text" id="speed">
 		<br>
+		<label> Color:</label>
+		<br>
+		<select id="color">
+			<option selected value="RANDOM"> Random </option>
+			<option value="SPEED"> Speed </option>
+		</select>
+		<br>
 		<input type="button" value="simulate" id="submit">
+		<input type="button" value="hide" id="hide">
+
 	</div>
 	<div id="opis">
 		<p> K&#x00F4;d se moze prikazati desnim klikom,
