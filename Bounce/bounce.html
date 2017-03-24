@@ -30,40 +30,25 @@
 			color: Purple;
 		}
 	</style>
-	<script type="text/javascript">
-		window.onload = function() {
-			
-			var hide = document.getElementById("hide");
-			hide.onclick = function() {
-				var desc = document.getElementById("opis");
-				
-				if (desc.style.display == "none") {
-					desc.style.display = "block";
-					hide.value = "hide";
-				}
-				else {
-					desc.style.display = "none";
-					hide.value = "show";
-				}
-			}
-			
-			var canvas = document.createElement("canvas"); 	
-			canvas.width = 400;
-			canvas.height = 400;
+	<script>
+		var canvas = document.createElement("canvas"); 	
+		canvas.width = 400;
+		canvas.height = 400;	
+		var c = canvas.getContext("2d");
 
+		var balls = {},
+			setBallNum = 15,
+			ballNum = 0,
+			maxSpeed = 5,
+			visualMode = "RANDOM",
+			speedSum = 0,
+			speedAvg = 0;
+
+		window.onload = function() {
 			document.body.appendChild(canvas);
-			var c = canvas.getContext("2d");
 			
 			c.fillStyle = "black";
 			c.fillRect(0, 0, canvas.width, canvas.height);
-
-			var balls = {},
-				setBallNum = 15,
-				ballNum = 0,
-				maxSpeed = 5,
-				visualMode = "RANDOM";
-				speedSum = 0,
-				speedAvg = 0;
 
 			var button = document.getElementById("submit");
 			
@@ -78,6 +63,10 @@
 				}
 			}, 30);
 
+			var hide = document.getElementById("hide");
+			var opis = document.getElementById("opis");
+			hide.onclick = function() hideElement(opis, hide);
+
 			button.onclick = function() {
 				deleteBalls();
 				var num = document.getElementById("ball").value;
@@ -87,133 +76,10 @@
 				visualMode = document.getElementById("color").value;
 				initBalls();
 			}
-
-			function Ball() {
-				this.radius = Math.random()*10 + 5;
-				this.mass = this.radius;
-				this.x = Math.random() * (canvas.width - this.radius);
-				this.y = Math.random() * (canvas.height - this.radius);
-				this.vx = Math.random() * maxSpeed;
-				this.vy = Math.random() * maxSpeed;
-				this.color = "hsla("+ Math.random()*360 +",100%,50%,1)";
-				this.intensity = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
-				speedSum += this.intensity;
-				balls[ballNum] = this;
-				ballNum++;
-				}
-
-			function checkEdge(ball) {
-				var rightEdge = canvas.width - ball.radius,
-						leftEdge = ball.radius,
-						topEdge = ball.radius,
-						bottomEdge = canvas.height - ball.radius;
-				if (ball.x >= rightEdge) {
-					ball.x = rightEdge;
-					ball.vx *= -1;
-				}
-				if (ball.x <= leftEdge) {
-					ball.x = leftEdge;
-					ball.vx *= -1;
-				}
-				if (ball.y <= topEdge) {
-					ball.y = topEdge;
-					ball.vy *= -1;
-				}
-				if (ball.y >= bottomEdge) {
-					ball.y = bottomEdge;
-					ball.vy *= -1;
-				}
-			}
-
-			function calculateCollisions() {
-				for (var i = 0; i < ballNum-1; i++) {
-					for (var j = i +1; j < ballNum; j++) {
-						if (collide(balls[i], balls[j]))
-							updateVelocity(balls[i], balls[j]);
-					}
-				}
-			}
-
-			function updateVelocity(ball1, ball2) {
-				var vektor = [ball2.x - ball1.x, ball2.y - ball1.y],
-					intensity = ball1.radius + ball2.radius,
-					norm = [vektor[0]/intensity, vektor[1]/intensity],
-					u1 = ball1.vx * norm[0] + ball1.vy * norm[1], // vektor1 before coll
-					u2 = ball2.vx * norm[0] + ball2.vy * norm[1], // vektor2 before coll
-					v1 = (u1*(ball1.mass - ball2.mass) + 2*ball2.mass*u2) /
-						 (ball1.mass + ball2.mass),             // vektor1 after coll
-					v2 = (u2*(ball2.mass - ball1.mass) + 2*ball1.mass*u1) /
-						 (ball1.mass + ball2.mass);             // vektor1 after coll	
-				var resultX1 = norm[0]*(v1-u1),
-					resultY1 = norm[1]*(v1-u1),
-					resultX2 = norm[0]*(v2-u2),
-					resultY2 = norm[1]*(v2-u2);
-				ball1.vx += resultX1;
-				ball1.vy += resultY1;
-				ball2.vx += resultX2;
-				ball2.vy += resultY2;
-				ball1.intensity = Math.sqrt(ball1.vx*ball1.vx + ball1.vy*ball1.vy);
-				ball2.intensity = Math.sqrt(ball2.vx*ball2.vx + ball2.vy*ball2.vy);
-			}
-
-			function collide(ball1, ball2) {
-				var tmp;
-				if ((tmp = distance(ball1.x, ball1.y, ball2.x, ball2.y))
-				    		 <= ball1.radius + ball2.radius) {
-					var vektor = [ball2.x - ball1.x, ball2.y - ball1.y],
-						distanceDiff = ball1.radius + ball2.radius - tmp,
-						norm = [vektor[0]/tmp, vektor[1]/tmp];
-					ball1.x -= norm[0] * distanceDiff/2;
-					ball1.y -= norm[1] * distanceDiff/2;
-					ball2.x += norm[0] * distanceDiff/2;
-					ball2.y += norm[1] * distanceDiff/2;
-					
-					return true;
-				}
-				return false;
-			}
-
-			function distance(x, y, x1, y1) {
-				return Math.sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1));
-			}
-
-			Ball.prototype.draw = function() {
-					this.x += this.vx;
-					this.y += this.vy;					
-					checkEdge(this);
-					var visual = this.color;
-					if (visualMode === "SPEED") {
-						var relSpeed = (this.intensity - speedAvg)/speedAvg;
-						if (relSpeed > 1) {
-							relSpeed = 1;	
-						}
-						visual = "hsla(" + (120 - 120*relSpeed) + ",100%, 50%, 1)";
-					}
-					c.fillStyle = visual;
-					c.strokeStyle = visual;
-					c.beginPath();
-					c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-					c.stroke();
-					c.fill();
-			};
-
-			function initBalls() {
-				for (var i = 0; i < setBallNum; i++) {
-					balls[i] = new Ball();
-				}
-				speedAvg = speedSum / ballNum;
-			}
-
-			function deleteBalls() {
-				for (var i = 0; i < setBallNum; i++) {
-					delete balls[i];
-				}	
-				ballNum = 0;
-				speedSum = 0;
-			}	
-
-					}
+		}
 	</script>
+	<script src="buttons.js"> </script>
+	<script src="balls.js"> </script>
 </head>
 <body>
 	<div>
