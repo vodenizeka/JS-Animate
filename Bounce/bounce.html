@@ -10,7 +10,7 @@
 		#opis {
 			font-size: 18px;
 			position: absolute;
-			top : 600px;
+			top : 700px;
 			margin-right: 200px;
 			background-color: gray;
 			padding: 30px;
@@ -42,7 +42,8 @@
 			maxSpeed = 5,
 			visualMode = "RANDOM",
 			speedSum = 0,
-			speedAvg = 0;
+			speedAvg = 0,
+			background = "black";
 
 		window.onload = function() {
 			document.body.appendChild(canvas);
@@ -55,7 +56,7 @@
 			initBalls();
 
 			setInterval(function() {
-				c.fillStyle = "black";
+				c.fillStyle = background;
 				c.fillRect(0, 0, canvas.width, canvas.height);
 				calculateCollisions();
 				for (var i = 0; i < ballNum; i++) {
@@ -69,12 +70,22 @@
 
 			button.onclick = function() {
 				deleteBalls();
+				canvas.width = document.getElementById("width").value;  // resize canvas
+				canvas.height = document.getElementById("height").value; // resize canvas
+				document.getElementById("opis").style.top = (canvas.height + 400) + "px";
 				var num = document.getElementById("ball").value;
 				setBallNum = parseInt(num);
 				var speed = document.getElementById("speed").value; 
 				maxSpeed = speed;
 				visualMode = document.getElementById("color").value;
 				initBalls();
+				var bgSetting = document.getElementById("trail").value;
+				if (bgSetting == "" || bgSetting > 1)
+					bgSetting = 1;
+				if (bgSetting >= 0 && bgSetting <= 1)
+					background = "rgba(0,0,0," + bgSetting + ")";
+				else
+					background = black;
 			}
 		}
 	</script>
@@ -98,11 +109,23 @@
 			<option value="SPEED"> Speed </option>
 		</select>
 		<br>
+		<label> Width:</label>
+		<br>
+		<input type="text" id="width">
+		<br>
+		<label> Height:</label>
+		<br>
+		<input type="text" id="height">
+		<br>
+		<label> Trail [0,1]:</label>
+		<br>
+		<input type="text" id="trail">
+		<br>
 		<input type="button" value="simulate" id="submit">
-		<input type="button" value="hide" id="hide">
+		<input type="button" value="show" id="hide">
 
 	</div>
-	<div id="opis">
+	<div id="opis" style="display: none">
 		<p> K&#x00F4;d se moze prikazati desnim klikom,
 		<i>View Page Source</i>.
 		<br> Sledi kratak opis osnovnih funkcija. </p>
