@@ -3,104 +3,95 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Bounce</title>
-	<style type="text/css">
-		body {
-			background-color: orange;
-		}
-		#opis {
-			font-size: 18px;
-			position: absolute;
-			top : 700px;
-			margin-right: 200px;
-			background-color: gray;
-			padding: 30px;
-		}
-		.func {
-			font-size: 20px;
-			color: DarkGreen;
-			font-weight: bold;
-		}
-		.var {
-			font-size: 20px;
-			color: blue;
-			font-weight: bold;
-		}
-		code {
-			font-size: 18px;
-			color: Purple;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="style.css"> 
+	<script src="balls.js"> </script>
 	<script>
 		var canvas = document.createElement("canvas"); 	
 		canvas.width = 400;
 		canvas.height = 400;	
 		var c = canvas.getContext("2d");
 
-		var balls = {},
-			setBallNum = 15,
+		var balls = [],
+			setBallNum = 10,
 			ballNum = 0,
 			maxSpeed = 5,
 			visualMode = "RANDOM",
 			speedSum = 0,
 			speedAvg = 0,
-			background = "black";
+			background = "black",
+			frame = 0,
+			glow = 1,
+			gravity = 0.02;
 
 		window.onload = function() {
 			document.body.appendChild(canvas);
 			
+			// stroke()  -> crtamo linije                         --> olovka
+			// fill()    -> bojimo unutrasnjost zatovrenih linija --> cetka
+
 			c.fillStyle = "black";
 			c.fillRect(0, 0, canvas.width, canvas.height);
-
-			var button = document.getElementById("submit");
-			
+	
 			initBalls();
+			
+			window.requestAnimationFrame(animate);	
 
-			setInterval(function() {
+			function animate() {
 				c.fillStyle = background;
 				c.fillRect(0, 0, canvas.width, canvas.height);
+
+				for (var i = 0; i < ballNum; i++) 
+					balls[i].update();	
 				calculateCollisions();
-				for (var i = 0; i < ballNum; i++) {
-					balls[i].draw();
-				}
-			}, 30);
+				
+				window.requestAnimationFrame(animate);	
+				for (var i = 0; i < ballNum; i++) 
+					balls[i].draw();	
+			}
 
-			var hide = document.getElementById("hide");
-			var opis = document.getElementById("opis");
-			hide.onclick = function() hideElement(opis, hide);
+			//setInterval(animate, 30);
 
-			button.onclick = function() {
+			var simulate = document.getElementById("simulate");
+			simulate.onclick = function() {
 				deleteBalls();
-				canvas.width = document.getElementById("width").value;  // resize canvas
-				canvas.height = document.getElementById("height").value; // resize canvas
-				document.getElementById("opis").style.top = (canvas.height + 400) + "px";
-				var num = document.getElementById("ball").value;
-				setBallNum = parseInt(num);
-				var speed = document.getElementById("speed").value; 
-				maxSpeed = speed;
-				visualMode = document.getElementById("color").value;
+				canvas.width = parseInt(document.getElementById("width").value);  // resize canvas
+				canvas.height = parseInt(document.getElementById("height").value); // resize canvas
+				setBallNum = parseInt(document.getElementById("ball").value);
+				maxSpeed = parseFloat(document.getElementById("speed").value);
 				initBalls();
-				var bgSetting = document.getElementById("trail").value;
-				if (bgSetting == "" || bgSetting > 1)
-					bgSetting = 1;
-				if (bgSetting >= 0 && bgSetting <= 1)
-					background = "rgba(0,0,0," + bgSetting + ")";
+
+				visualMode = document.getElementById("color").value;
+				if (visualMode === "SPEED")
+					reColor();
+
+				var trail = document.getElementById("trail").value;
+				if (trail == "" || trail > 1)
+					trail = 1;
+				if (trail >= 0 && trail <= 1)
+					background = "rgba(0,0,0," + trail + ")";
 				else
 					background = black;
 			}
+
+			var hide = document.getElementById("hide");
+			var counter = document.getElementById("print");
+			hide.onclick = function() hideElement(counter, hide);
+
+			//setInterval(prebroj, 1000);
 		}
 	</script>
-	<script src="buttons.js"> </script>
-	<script src="balls.js"> </script>
 </head>
 <body>
+	<form>
+	<fieldset>	
 	<div>
 		<label>Number of balls: </label>
 		<br>
-		<input type="text" id="ball">
+		<input type="text" value="10" id="ball">
 		<br>
 		<label> Max speed:</label>
 		<br>
-		<input type="text" id="speed">
+		<input type="text" value="5" id="speed">
 		<br>
 		<label> Color:</label>
 		<br>
@@ -111,19 +102,30 @@
 		<br>
 		<label> Width:</label>
 		<br>
-		<input type="text" id="width">
+		<input type="text"  value="400" id="width">
 		<br>
 		<label> Height:</label>
 		<br>
-		<input type="text" id="height">
+		<input type="text" value="400" id="height">
 		<br>
 		<label> Trail [0,1]:</label>
 		<br>
-		<input type="text" id="trail">
+		<input type="text"  value="1" id="trail">
 		<br>
-		<input type="button" value="simulate" id="submit">
+		<input type="button" value="simulate" id="simulate">
 		<input type="button" value="show" id="hide">
 
+	</div>
+	</fieldset>
+	</form>
+	<div id="print" style="display: none"> 
+		<table> 
+			<tr>
+				<th>RED</th><th>YELLOW</th><th>GREEN</th><th>BLUE</th>
+			</tr>
+			<tr> 
+				<td id="red"></td><td id="yellow"></td><td id="green"></td><td id="blue"></td>
+			</tr>
 	</div>
 	<div id="opis" style="display: none">
 		<p> K&#x00F4;d se moze prikazati desnim klikom,

@@ -1,0 +1,40 @@
+body {
+	background-color: orange;
+}
+
+code {
+	font-size: 18px;
+	color: Purple;
+}
+
+#opis {
+	font-size: 18px;
+	margin-right: 200px;
+	background-color: gray;
+	padding: 30px;
+}
+
+#print {
+	font-size : 50px;
+	width: 700px;
+	height: 300px;
+	color: red;
+	position: absolute;
+	left: 500px;
+	top: 10px;
+}
+
+.func {
+	font-size: 20px;
+	color: DarkGreen;
+	font-weight: bold;
+}
+
+.var {
+	font-size: 20px;
+	color: blue;
+	font-weight: bold;
+}
+
+
+
