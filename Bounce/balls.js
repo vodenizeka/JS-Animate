@@ -1,5 +1,5 @@
 function Ball() {
-	this.radius = Math.random()*10 + 5;
+	this.radius = Math.random()*radiusDiff + radiusMin;
 	this.mass = this.radius * this.radius * Math.PI;
 	this.x = Math.random() * canvas.width;
 	this.y = Math.random() * canvas.height;
@@ -17,8 +17,12 @@ Ball.prototype.draw = function() {
 	c.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
 	c.stroke();
 	c.fill();
-	if (glow) /////
-		c.fillStyle = "rgba(255,255,255," + glow + ")";
+	if (glowAlpha > 0) { 
+		c.beginPath();
+		c.fillStyle = "rgba(255,255,255," + glowAlpha + ")";
+		c.arc(this.x, this.y, this.radius * glowSize, 0, 2*Math.PI);
+		c.fill();
+	}
 };
 
 Ball.prototype.update = function() {
@@ -27,9 +31,9 @@ Ball.prototype.update = function() {
 		topEdge = this.radius,
 		bottomEdge = canvas.height - this.radius;
 
-	this.x += this.vx;
-	this.y += this.vy;					
-	this.vy += gravity;
+	this.x += this.vx * Simulation.delta;
+	this.vy += gravity * Simulation.delta;
+	this.y += this.vy * Simulation.delta;					
 
 	if (this.x >= rightEdge) {
 		this.x = rightEdge;
@@ -88,6 +92,7 @@ Ball.prototype.collide = function(ball) {
 		ball.x += norm[0] * distanceDiff/2;
 		ball.y += norm[1] * distanceDiff/2;
 
+		console.log(distanceDiff / (this.radius < ball.radius ? this.radius : ball.radius));
 		return true;
 	}
 	return false;

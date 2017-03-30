@@ -7,11 +7,50 @@ code {
 	color: Purple;
 }
 
-#opis {
-	font-size: 18px;
-	margin-right: 200px;
-	background-color: gray;
-	padding: 30px;
+legend {
+	font-size: 30px;
+}
+
+.data {
+	margin: 5px;
+	box-sizing: border-box;
+	border: 2px solid black;
+	text-align: center;
+	padding: 10px;
+	height: 300px;
+}
+
+.buttons {
+	display: block;
+}
+
+#wrapper {
+	background-color: yellow;
+	height: 400px;
+}
+
+#myCanvas {
+}
+
+#ballData  {
+	background-color: purple;
+	width: 300px;
+}
+
+#visualData {
+	background-color: blue;
+	width: 300px;
+	position: absolute;
+	left: 320px;
+	top: 0px;
+}
+
+#canvasData {
+	background-color: green;
+	width: 300px;
+	position: absolute;
+	left: 610px;
+	top: 0px;
 }
 
 #print {
