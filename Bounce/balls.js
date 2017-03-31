@@ -5,8 +5,6 @@ function Ball() {
 	this.y = Math.random() * canvas.height;
 	this.vx = Math.random() * maxSpeed;
 	this.vy = Math.random() * maxSpeed;
-	this.ax = 0;
-	this.ay = 0;
 	this.intensity = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
 	this.color = "hsla("+ Math.random()*360 +",100%,50%,1)";
 	this.colorWheel = 0;
@@ -35,8 +33,6 @@ Ball.prototype.update = function() {
 
 	this.x += this.vx * Simulation.delta;
 	this.y += this.vy * Simulation.delta;					
-	this.vx += this.ax * Simulation.delta;
-	this.vy += this.ay * Simulation.delta;
 	this.vy += gravity * Simulation.delta;
 
 	if (this.x >= rightEdge) {
