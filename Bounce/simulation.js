@@ -13,14 +13,19 @@ Simulation = {
 	},
 
 	update : function() {
-		for (var i = 0; i < ballNum; i++) 
+		for (var i = 0; i < ballNum; i++) {
+			if (gravityOn != 0) 
+				gravityOn.pull(balls[i]);
 			balls[i].update();	
+		}
 		calculateCollisions();
 	},
 
 	draw : function() {
 		c.fillStyle = background;
 		c.fillRect(0, 0, canvas.width, canvas.height);
+		if (gravityOn != 0)
+			gravityOn.draw();
 		for (var i = 0; i < ballNum; i++) 
 			balls[i].draw();	
 	}

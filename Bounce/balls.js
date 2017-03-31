@@ -1,10 +1,12 @@
 function Ball() {
 	this.radius = Math.random()*radiusDiff + radiusMin;
-	this.mass = this.radius * this.radius * Math.PI;
+	this.mass = this.radius * this.radius;
 	this.x = Math.random() * canvas.width;
 	this.y = Math.random() * canvas.height;
 	this.vx = Math.random() * maxSpeed;
 	this.vy = Math.random() * maxSpeed;
+	this.ax = 0;
+	this.ay = 0;
 	this.intensity = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
 	this.color = "hsla("+ Math.random()*360 +",100%,50%,1)";
 	this.colorWheel = 0;
@@ -32,8 +34,10 @@ Ball.prototype.update = function() {
 		bottomEdge = canvas.height - this.radius;
 
 	this.x += this.vx * Simulation.delta;
-	this.vy += gravity * Simulation.delta;
 	this.y += this.vy * Simulation.delta;					
+	this.vx += this.ax * Simulation.delta;
+	this.vy += this.ay * Simulation.delta;
+	this.vy += gravity * Simulation.delta;
 
 	if (this.x >= rightEdge) {
 		this.x = rightEdge;
@@ -83,16 +87,18 @@ Ball.prototype.isClose = function(ball) {
 Ball.prototype.collide = function(ball) {
 	var realDist;
 	if ((realDist = this.distance(ball)) <= this.radius + ball.radius) {
-		var vector = [ball.x - this.x, ball.y - this.y],
+		var vector = new Vector2d(ball.x - this.x, ball.y - this.y),
 			distanceDiff = this.radius + ball.radius - realDist,
-			norm = [vector[0]/realDist, vector[1]/realDist];
+			norm = vector.normalize(),
+			massSum = this.mass + ball.mass,
+			relMass1 = this.mass / massSum,
+			relMass2 = ball.mass / massSum;
 
-		this.x -= norm[0] * distanceDiff/2;
-		this.y -= norm[1] * distanceDiff/2;
-		ball.x += norm[0] * distanceDiff/2;
-		ball.y += norm[1] * distanceDiff/2;
+		this.x -= norm[0] * distanceDiff * relMass1;
+		this.y -= norm[1] * distanceDiff * relMass1;
+		ball.x += norm[0] * distanceDiff * relMass2;
+		ball.y += norm[1] * distanceDiff * relMass2;
 
-		console.log(distanceDiff / (this.radius < ball.radius ? this.radius : ball.radius));
 		return true;
 	}
 	return false;

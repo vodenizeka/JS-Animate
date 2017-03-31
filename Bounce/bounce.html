@@ -6,6 +6,8 @@
 	<link rel="stylesheet" type="text/css" href="style.css"> 
 	<script src="balls.js"> </script>
 	<script src="simulation.js"> </script>
+	<script src="vector.js"> </script>
+	<script src="gravity.js"> </script>
 	<script>
 		var canvas, c;
 		var balls = [],
@@ -20,7 +22,8 @@
 			background = "black",
 			glowAlpha = 0,
 			glowSize = 0,
-			gravity = 0;
+			gravity = 0,
+			gravityOn = 0;
 
 		window.onload = function() {
 			canvas = document.getElementById("myCanvas");
@@ -32,11 +35,11 @@
 			c.fillRect(0, 0, canvas.width, canvas.height);
 	
 			initBalls();
+
+			gravityOn = new Gravity(1000 ,1000, 200, 1000);
 		
 			Simulation.then = Date.now();
-			window.requestAnimationFrame(Simulation.frame);	
-
-			//setInterval(animate, 30);
+			Simulation.frame();
 
 
 			var simulate = document.getElementById("simulate");
@@ -46,11 +49,11 @@
 				canvas.height = parseInt(document.getElementById("height").value); // resize canvas
 				setBallNum = parseInt(document.getElementById("ball").value);
 				maxSpeed = parseFloat(document.getElementById("speed").value);
+				radiusMin = parseFloat(document.getElementById("radiusMin").value);
+				radiusDiff = parseFloat(document.getElementById("radiusDiff").value);
 				gravity = parseFloat(document.getElementById("gravity").value);
 				glowAlpha = parseFloat(document.getElementById("glowAlpha").value);
 				glowSize = parseFloat(document.getElementById("glowSize").value);
-				radiusMin = parseFloat(document.getElementById("radiusMin").value);
-				radiusDiff = parseFloat(document.getElementById("radiusDiff").value);
 				initBalls();
 
 				visualMode = document.getElementById("color").value;
