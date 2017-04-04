@@ -23,7 +23,8 @@
 			glowAlpha = 0,
 			glowSize = 0,
 			gravity = 0,
-			gravityOn = 0;
+			colorCap = 50,
+			colorRel = 0.5;
 
 		window.onload = function() {
 			canvas = document.getElementById("myCanvas");
@@ -57,6 +58,8 @@
 				visualMode = document.getElementById("color").value;
 				if (visualMode === "SPEED")
 					reColor();
+				else if (visualMode === "BUMP")
+					reColor("bump");
 
 				var trail = document.getElementById("trail").value;
 				if (trail == "" || trail > 1)
@@ -64,7 +67,7 @@
 				else if (trail >= 0 && trail <= 1)
 					background = "rgba(0,0,0," + trail + ")";
 				else
-					background = black;
+					background = "black";
 				
 				c.fillStyle = "black";
 				c.fillRect(0, 0, canvas.width, canvas.height);
@@ -104,6 +107,7 @@
 				<select id="color">
 					<option selected value="RANDOM"> Random </option>
 					<option value="SPEED"> Speed </option>
+					<option value="BUMP"> Bump </option>
 				</select>
 			</div>
 		</div>

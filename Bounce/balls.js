@@ -8,6 +8,7 @@ function Ball() {
 	this.intensity = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
 	this.color = "hsla("+ Math.random()*360 +",100%,50%,1)";
 	this.colorWheel = 0;
+	this.colorCount = 0;
 }
 
 Ball.prototype.draw = function() {
@@ -122,6 +123,16 @@ Ball.prototype.updateVelocity = function(ball) {
 		this.changeColor();
 		ball.changeColor();
 	}
+	else if (visualMode === "BUMP") {
+		bumpColor(this, ball);
+	}
+};
+
+Ball.prototype.initBumpColor = function(color1, color2) {
+	if ((Math.random()) >= colorRel)
+		this.color = color1;
+	else
+		this.color = color2;
 };
 
 Ball.prototype.changeColor = function() {
@@ -182,7 +193,46 @@ function hideElement(element, button) {
 	}
 }
 
-function reColor() {
-	for (var i = 0; i < ballNum; i++)
-		balls[i].changeColor();
+function reColor(color) {
+	if (color === "bump") {
+		for (var i = 0; i < ballNum; i++)
+			balls[i].initBumpColor("red", "blue");
+	}
+	else {
+		for (var i = 0; i < ballNum; i++)
+			balls[i].changeColor();
+	}
 }
+
+ function bumpColor(ball1, ball2) {
+	if (ball1.color === ball2.color) {
+		ball1.colorCount++;
+		ball2.colorCount++;
+	}
+	else if (ball1.colorCount > ball2.colorCount) {
+		ball2.color = ball1.color;
+		ball2.colorCount = 0;
+	}
+	else if (ball1.colorCountt < ball2.colorCount) {
+		ball1.color = ball2.color;
+		ball1.colorCount = 0;
+	}
+	if (ball1.colorCount > colorCap) {
+		ball1.reverseColor();
+		ball1.colorCount = 0;
+	}
+	if (ball2.colorCount > colorCap) {
+		ball2.reverseColor();
+		ball2.colorCount = 0;
+	}
+};
+
+Ball.prototype.reverseColor = function() {
+	if (this.color === "blue")
+		this.color = "red";
+	else
+		this.color = "blue";
+};
+
+
+
