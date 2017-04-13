@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<script src="player.js"> </script>
+	<script src="gravityField.js"> </script>
+	<script src="simulation.js"> </script>
+	<script src="../Field/vector2D.js"> </script>
+	<script>
+
+		var canvas = document.createElement("canvas");
+		canvas.width = 400;
+		canvas.height = 400;
+		var c = canvas.getContext("2d");
+		var player = new Player(20, canvas.height/2);
+		var	gravity = new Vector2D(0, 0.1),
+			maxSpeed = 20,
+			edgeFriction = 0.9,
+			edgeBounce = 0.9,
+			airDragConst = 0.00;
+	
+		var antiGravity = [];
+		var antiGravityNum = 4;
+		for (let i = 0; i < antiGravityNum; i++) {
+			antiGravity[i] = new GravityField(i*100, 0, 25, canvas.height, 
+							-2*gravity.x, -2*gravity.y, (i+1)*75);
+		}
+		
+		window.onload = function() {
+			document.body.appendChild(canvas);
+			
+			player.vel = new Vector2D(4, -10);
+
+			Simulation.then = Date.now();
+			Simulation.frame();
+			
+		}
+		
+		function drawBackground() {
+			c.fillStyle = "black";
+			c.fillRect(0, 0, canvas.width, canvas.height);
+			for (let i = 0; i < antiGravityNum; i++) {
+				c.fillStyle = "hsla(" + Math.random() * antiGravity[i].colorRange 
+							+ ", 100%, 50%, 0.5)";
+				c.fillRect(antiGravity[i].pos.x, antiGravity[i].pos.y, 
+						   antiGravity[i].width, antiGravity[i].height);
+			}
+		}
+
+	</script>
+</head>
+<body>
+
+</body>
+</html>
