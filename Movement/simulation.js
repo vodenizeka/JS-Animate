@@ -13,16 +13,21 @@ Simulation = {
 	},
 
 	update : function() {
-		var airDrag = player.vel.clone();
-		airDrag.mult(-airDragConst);
+		applyMovementForce(playerSpeed);			
 
+		//apply anti-gravity forces
 		for (let i = 0; i < antiGravityNum; i++) {
 			if (antiGravity[i].isPlayerInside(player))
 				player.applyForce(antiGravity[i].force);
 		}
 
-		player.applyForce(airDrag);
 		player.applyForce(gravity);
+
+		var airDrag = player.vel.clone();
+		airDrag.mult(-airDragConst);
+		player.applyForce(airDrag);
+
+
 		player.vel.limit(maxSpeed);
 		player.move();
 		player.edge();

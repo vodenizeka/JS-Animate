@@ -29,10 +29,6 @@ function Clock(x, y, rad) {
 		}
 		if (this.hours >= 12)
 			this.hours = 0;
-
-		console.log(this.seconds);
-		console.log(this.minutes);
-		console.log(this.hours);
 	}
 
 	this.draw = function() {

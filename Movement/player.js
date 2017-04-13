@@ -47,5 +47,66 @@ function Player(x, y) {
 		c.beginPath();
 		c.arc(this.pos.x, this.pos.y, this.radius, 0, 2*Math.PI, false);
 		c.fill();
-	}
+	};
 }
+
+window.addEventListener("keydown", function(e) {
+	console.log(e.keyCode);	
+	// UP movement
+	if (e.keyCode === 87 || e.keyCode === 38) {
+		moveUp = true;		
+	}
+	// DOWN movement
+	if (e.keyCode === 83 || e.keyCode === 40) {
+		moveDown = true;		
+	}
+	// RIGHT movement
+	if (e.keyCode === 68 || e.keyCode === 39) {
+		moveRight = true;
+	}
+	// LEFT movement
+	if (e.keyCode === 65 || e.keyCode === 37) {
+		moveLeft = true;
+	}
+}, false);
+
+window.addEventListener("keyup", function(e) {
+	// UP movement
+	if (e.keyCode === 87 || e.keyCode === 38) {
+		moveUp = false;		
+	}
+	// DOWN movement
+	if (e.keyCode === 83 || e.keyCode === 40) {
+		moveDown = false;		
+	}
+	// RIGHT movement
+	if (e.keyCode === 68 || e.keyCode === 39) {
+		moveRight = false;
+	}
+	// LEFT movement
+	if (e.keyCode === 65 || e.keyCode === 37) {
+		moveLeft = false;
+	}
+}, false);
+
+function createMovementForce(speed) {
+	if (moveUp)
+		moveForce.add(new Vector2D(0,-1));
+	if (moveDown)
+		moveForce.add(new Vector2D(0, 1));
+	if (moveRight)
+		moveForce.add(new Vector2D(1, 0));
+	if (moveLeft)
+		moveForce.add(new Vector2D(-1, 0));
+
+	moveForce.mult(speed);	
+}
+
+function applyMovementForce(speed) {
+	createMovementForce(speed);
+	player.applyForce(moveForce);
+	moveForce.mult(0); // reset movement force
+}
+
+
+

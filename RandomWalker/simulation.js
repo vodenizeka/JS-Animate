@@ -13,22 +13,11 @@ Simulation = {
 	},
 	
 	update : function() {
-		clock.updateTime();
-		for (let i of particles) { 
-			i.update();	
-		}
+		walker.move();
 	},
 
 	draw : function() {
-		c.fillStyle = background;
-		c.fillRect(0,0,canvas.width, canvas.height);
-		clock.draw();			
-		for (let i of particles ) 
-			i.draw();	
-		for (let i = 0; i < dimension; i++) {
-			for (let j = 0; j < dimension; j++)
-				vectorField[i,j].draw(scale +j*dimensionX,scale + i*dimensionY);
-		}
+		walker.draw();
 	}
 }
 

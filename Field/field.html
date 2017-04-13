@@ -5,6 +5,8 @@
 	<title>Field</title>
 	<script src="simulation.js"> </script>
 	<script src="clock.js"> </script>
+	<script src="particle.js"> </script>
+	<script src="../MyLib/vector2D.js"> </script>
 	<script> 
 		var canvas = document.createElement("canvas");
 		canvas.width = 400;
@@ -12,15 +14,28 @@
 		var c = canvas.getContext("2d");
 		
 		var clock = new Clock(20,20,20);
-		var scale = 40;
+		var scale = 20;
 		var background = "rgba(0,0,0,1)";
+		var particleNum = 0,
+			particles = [],
+			startSpeed = 5,
+			topSpeed = 10,
+			dimension = 10,
+			dimensionX = canvas.width / dimension,
+			dimensionY = canvas.height / dimension,
+			vectorField = [],
+			fieldForce = 10;
 
 		window.onload = function() {
 			document.body.appendChild(canvas);
 
 			c.fillStyle = "black";
 			c.fillRect(0, 0, canvas.width, canvas.height);
-	
+
+			initParticles(particles, 100);
+			
+			initVectors2D(dimension);
+
 			Simulation.then = Date.now();
 			Simulation.frame();
 		}
