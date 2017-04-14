@@ -16,7 +16,7 @@
 		var c = canvas.getContext("2d");
 
 		var player = new Player(20, canvas.height/2),
-			playerSpeed = 0.2;
+			playerSpeed = 0.2,
 			moveUp = false,
 			moveDown = false,
 			moveRight = false
@@ -24,6 +24,7 @@
 			moveForce = new Vector2D(0,0);
 
 		var	gravity = new Vector2D(0, 0.1),
+			gravityOn = true,
 			maxSpeed = 20,
 			edgeFriction = 0.9,
 			edgeBounce = 0.8,
@@ -56,8 +57,7 @@
 			c.fillStyle = "black";
 			c.fillRect(0, 0, canvas.width, canvas.height);
 			for (let i = 0; i < antiGravityNum; i++) {
-				c.fillStyle = "hsla(" + Math.random() * antiGravity[i].colorRange 
-							+ ", 100%, 50%, 0.5)";
+				c.fillStyle = "hsla(120, 100%, 50%, 0.5)";
 				c.fillRect(antiGravity[i].pos.x, antiGravity[i].pos.y, 
 						   antiGravity[i].width, antiGravity[i].height);
 			}

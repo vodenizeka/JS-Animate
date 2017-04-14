@@ -20,8 +20,8 @@ Simulation = {
 			if (antiGravity[i].isPlayerInside(player))
 				player.applyForce(antiGravity[i].force);
 		}
-
-		player.applyForce(gravity);
+		if (gravityOn)
+			player.applyForce(gravity);
 
 		var airDrag = player.vel.clone();
 		airDrag.mult(-airDragConst);

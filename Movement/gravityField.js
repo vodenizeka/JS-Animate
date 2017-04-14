@@ -15,6 +15,14 @@ function GravityField(posX, posY, width, height, forceX, forceY, color) {
 	};
 }
 
-
+window.addEventListener("keydown", function(e) {
+	// G pressed
+	if (e.keyCode === 71) {
+		if (gravityOn)
+			gravityOn = false;
+		else
+			gravityOn = true;
+	}
+}, false);
 
 

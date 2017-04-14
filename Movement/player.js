@@ -89,6 +89,16 @@ window.addEventListener("keyup", function(e) {
 	}
 }, false);
 
+window.addEventListener("keydown", function(e) {
+	if (e.keyCode === 32) 
+		player.thrustCharge = true;
+}, false);
+
+window.addEventListener("keyup", function(e) {
+	if (e.keyCode === 32) 
+		player.thrustCharge = false;
+}, false);
+
 function createMovementForce(speed) {
 	if (moveUp)
 		moveForce.add(new Vector2D(0,-1));
