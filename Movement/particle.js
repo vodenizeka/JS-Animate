@@ -3,18 +3,22 @@ function Particle(x, y, edgeTop, edgeBot, edgeLeft, edgeRight) {
 	this.vel = new Vector2D(0, 0);	
 	this.acc = new Vector2D(0, 0);	
 
-	this.color = "hsla(260, 100%, 80%, 0.8)";
+	this.color = "hsla(260, 100%, 80%, 1)";
 	this.size = 3;
 
 	this.edgeCase = "flow";
 	this.edgeFriction = 1;
 	this.edgeBounce = 1;
 
-	this.maxSpeed = 3;
+	this.maxSpeed = 300;
 
 	this.move = function() {
-		this.vel.add(this.acc);
-		this.pos.add(this.vel);
+		var accPerSec = this.acc.clone();
+		var velPerSec = this.vel.clone();
+		accPerSec.mult(Simulation.delta);
+		velPerSec.mult(Simulation.delta);
+		this.vel.add(accPerSec);
+		this.pos.add(velPerSec);
 	};
 
 	this.edge = function() {
@@ -45,14 +49,26 @@ function Particle(x, y, edgeTop, edgeBot, edgeLeft, edgeRight) {
 				this.vel.mult(this.edgeFriction);
 		}
 		else {
-			if (this.pos.x > edgeRight - this.size) 
+			var flow = false;
+			if (this.pos.x > edgeRight - this.size) {
 				this.pos.x = edgeLeft;
-			if (this.pos.x < edgeLeft) 
+				flow = true;
+			}
+			if (this.pos.x < edgeLeft) {
 				this.pos.x = edgeRight - this.size;
-			if (this.pos.y > edgeBot - this.size) 
+				flow = true;
+			}
+			if (this.pos.y > edgeBot - this.size) {
 				this.pos.y = edgeTop;
-			if (this.pos.y < edgeTop) 
+				flow = true;
+			}
+			if (this.pos.y < edgeTop) {
 				this.pos.y = edgeBot - this.size;
+				flow = true;
+			}
+			
+			if (flow) 
+				this.vel.set(0,0);
 		}
 	}
 	

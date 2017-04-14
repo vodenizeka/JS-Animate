@@ -217,6 +217,7 @@ function reColor(color) {
 		ball1.color = ball2.color;
 		ball1.colorCount = 0;
 	}
+
 	if (ball1.colorCount > colorCap) {
 		ball1.reverseColor();
 		ball1.colorCount = 0;

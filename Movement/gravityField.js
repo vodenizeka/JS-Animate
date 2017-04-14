@@ -23,7 +23,7 @@ function GravityField(posX, posY, width, height, forceX, forceY, color, particle
 	};
 
 	this.draw = function() {
-		c.fillStyle = "hsla(" + this.color + ", 100%, 50%, 0.5)";
+		c.fillStyle = "hsla(" + this.color + ", 100%, 0%, 0.051)";
 		c.fillRect(this.pos.x, this.pos.y, this.width, this.height);
 
 		for (let i = 0; i < this.particleNum; i++) 

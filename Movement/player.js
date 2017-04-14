@@ -2,13 +2,30 @@ function Player(x, y) {
 	this.pos = new Vector2D(x, y);	
 	this.vel = new Vector2D(0, 0);	
 	this.acc = new Vector2D(0, 0);	
-
+	
 	this.color = "white";
 	this.radius = 10;
 
+	this.thrustCharging = false;
+	this.thrustPower = 0;
+	this.thrustIncrease = 400;
+	
+	this.maxSpeed = 1000;
+
+	this.moveVector = new Vector2D(0, 0);
+	this.moveSpeed = 1000;
+	this.moveUp = false;
+	this.moveDown = false;
+	this.moveRight = false;
+	this.moveLeft = false;
+
 	this.move = function() {
-		this.vel.add(this.acc);
-		this.pos.add(this.vel);
+		var accPerSec = this.acc.clone();
+		var velPerSec = this.vel.clone();
+		accPerSec.mult(Simulation.delta);
+		velPerSec.mult(Simulation.delta);
+		this.vel.add(accPerSec);
+		this.pos.add(velPerSec);
 	};
 
 	this.edge = function() {
@@ -34,12 +51,46 @@ function Player(x, y) {
 			bounce = true;
 		}
 
-		if (bounce === true)
+		if (bounce)
 			this.vel.mult(edgeFriction);
 	}
 	
 	this.applyForce = function(force) {
 		this.acc.add(force)
+	};
+
+	this.updateMovement = function() {
+		var x = 0, y = 0;
+		if (this.moveUp)
+			y -= 1;
+		if (this.moveDown)
+			y += 1;
+		if (this.moveRight)
+			x += 1;
+		if (this.moveLeft)
+			x -= 1;
+
+		this.moveVector.set(x, y);
+		this.moveVector.mult(this.moveSpeed);
+	};
+
+	this.thrust = function() {
+		if (this.thrustCharging) {
+			this.thrustPower += this.thrustIncrease;
+		}
+		else if (this.thrustPower) {
+			var thrustForce = this.vel.clone();
+			thrustForce.normalize();
+			thrustForce.mult(this.thrustPower);
+			this.applyForce(thrustForce);
+			this.thrustPower = 0;
+		}
+	};
+
+	this.applyMovementForces = function() {
+		this.updateMovement();
+		this.applyForce(this.moveVector);
+		this.thrust();
 	};
 
 	this.draw = function() {
@@ -50,27 +101,8 @@ function Player(x, y) {
 	};
 }
 
-function createMovementForce(speed) {
-	if (moveUp)
-		moveForce.add(new Vector2D(0,-1));
-	if (moveDown)
-		moveForce.add(new Vector2D(0, 1));
-	if (moveRight)
-		moveForce.add(new Vector2D(1, 0));
-	if (moveLeft)
-		moveForce.add(new Vector2D(-1, 0));
-
-	moveForce.mult(speed);	
-}
-
-function applyMovementForce(speed) {
-	createMovementForce(speed);
-	player.applyForce(moveForce);
-	moveForce.mult(0); // reset movement force
-}
-
 function applyAllForces() {
-	applyMovementForce(playerSpeed);			
+	player.applyMovementForces();			
 
 	//apply anti-gravity forces
 	for (let i = 0; i < gravityFieldsNum; i++) {
@@ -91,19 +123,19 @@ window.addEventListener("keydown", function(e) {
 	console.log(e.keyCode);	
 	// UP movement
 	if (e.keyCode === 87 || e.keyCode === 38) {
-		moveUp = true;		
+		player.moveUp = true;		
 	}
 	// DOWN movement
 	if (e.keyCode === 83 || e.keyCode === 40) {
-		moveDown = true;		
+		player.moveDown = true;		
 	}
 	// RIGHT movement
 	if (e.keyCode === 68 || e.keyCode === 39) {
-		moveRight = true;
+		player.moveRight = true;
 	}
 	// LEFT movement
 	if (e.keyCode === 65 || e.keyCode === 37) {
-		moveLeft = true;
+		player.moveLeft = true;
 	}
 }, false);
 
@@ -111,30 +143,31 @@ window.addEventListener("keydown", function(e) {
 window.addEventListener("keyup", function(e) {
 	// UP movement
 	if (e.keyCode === 87 || e.keyCode === 38) {
-		moveUp = false;		
+		player.moveUp = false;		
 	}
 	// DOWN movement
 	if (e.keyCode === 83 || e.keyCode === 40) {
-		moveDown = false;		
+		player.moveDown = false;		
 	}
 	// RIGHT movement
 	if (e.keyCode === 68 || e.keyCode === 39) {
-		moveRight = false;
+		player.moveRight = false;
 	}
 	// LEFT movement
 	if (e.keyCode === 65 || e.keyCode === 37) {
-		moveLeft = false;
+		player.moveLeft = false;
 	}
 }, false);
 
+// Thrust movement
 window.addEventListener("keydown", function(e) {
 	if (e.keyCode === 32) 
-		player.thrustCharge = true;
+		player.thrustCharging = true;
 }, false);
 
 window.addEventListener("keyup", function(e) {
 	if (e.keyCode === 32) 
-		player.thrustCharge = false;
+		player.thrustCharging = false;
 }, false);
 
 

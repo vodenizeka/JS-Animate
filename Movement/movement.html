@@ -11,30 +11,26 @@
 	<script>
 
 		var canvas = document.createElement("canvas");
-		canvas.width = 600;
-		canvas.height = 600;
+		canvas.width = 800;
+		canvas.height = 640;
 
 		var c = canvas.getContext("2d");
+		c.fillStyle = "black";
+		c.fillRect(0, 0, canvas.width, canvas.height);
 
-		var player = new Player(20, canvas.height/2),
-			playerSpeed = 0.2,
-			moveUp = false,
-			moveDown = false,
-			moveRight = false
-			moveLeft = false,
-			moveForce = new Vector2D(0,0);
+		var player = new Player(20, canvas.height/2);
 
-		var	gravity = new Vector2D(0, 0.1),
+		var	gravity = new Vector2D(0, 500),
 			gravityOn = true,
-			maxSpeed = 20,
+			maxSpeed = 2000,
 			edgeFriction = 0.9,
-			edgeBounce = 0.8,
-			airDragConst = 0.01;
+			edgeBounce = 0.5,
+			airDragConst = 0.5;
 	
 		var gravityFields = [];
-		gravityFields[0] = new GravityField(20, 50, 25, 400, 0, -0.05, 120, 200);	
-		gravityFields[1] = new GravityField(100, 500, 400, 35, 0.05, 0, 240, 200);	
-		gravityFields[2] = new GravityField(100, 100, 400, 300, 0.15, -0.13, 40, 200);	
+		gravityFields[0] = new GravityField(175, 250, 350, 150, 0, -2100, 120, 100);	
+		gravityFields[1] = new GravityField(375, 30, 200, 130, -1000, 0, 240, 100);	
+		gravityFields[2] = new GravityField(50, 50, 200, 150, 1000, -1200, 10, 100);	
 		var gravityFieldsNum = gravityFields.length;
 
 		
@@ -45,11 +41,10 @@
 
 			Simulation.then = Date.now();
 			Simulation.frame();
-			
 		}
 		
 		function drawBackground() {
-			c.fillStyle = "black";
+			c.fillStyle = "rgba(0,0,0,0.09)";
 			c.fillRect(0, 0, canvas.width, canvas.height);
 		}
 
