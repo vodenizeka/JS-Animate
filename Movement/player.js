@@ -39,7 +39,7 @@ function Player(x, y) {
 	}
 	
 	this.applyForce = function(force) {
-		this.vel.add(force)
+		this.acc.add(force)
 	};
 
 	this.draw = function() {
@@ -50,6 +50,43 @@ function Player(x, y) {
 	};
 }
 
+function createMovementForce(speed) {
+	if (moveUp)
+		moveForce.add(new Vector2D(0,-1));
+	if (moveDown)
+		moveForce.add(new Vector2D(0, 1));
+	if (moveRight)
+		moveForce.add(new Vector2D(1, 0));
+	if (moveLeft)
+		moveForce.add(new Vector2D(-1, 0));
+
+	moveForce.mult(speed);	
+}
+
+function applyMovementForce(speed) {
+	createMovementForce(speed);
+	player.applyForce(moveForce);
+	moveForce.mult(0); // reset movement force
+}
+
+function applyAllForces() {
+	applyMovementForce(playerSpeed);			
+
+	//apply anti-gravity forces
+	for (let i = 0; i < gravityFieldsNum; i++) {
+		if (gravityFields[i].isInside(player))
+			player.applyForce(gravityFields[i].force);
+	}
+
+	if (gravityOn)
+		player.applyForce(gravity);
+
+	var airDrag = player.vel.clone();
+	airDrag.mult(-airDragConst);
+	player.applyForce(airDrag);
+}
+
+// Movement activate 
 window.addEventListener("keydown", function(e) {
 	console.log(e.keyCode);	
 	// UP movement
@@ -70,6 +107,7 @@ window.addEventListener("keydown", function(e) {
 	}
 }, false);
 
+// Movement deactivate
 window.addEventListener("keyup", function(e) {
 	// UP movement
 	if (e.keyCode === 87 || e.keyCode === 38) {
@@ -98,25 +136,6 @@ window.addEventListener("keyup", function(e) {
 	if (e.keyCode === 32) 
 		player.thrustCharge = false;
 }, false);
-
-function createMovementForce(speed) {
-	if (moveUp)
-		moveForce.add(new Vector2D(0,-1));
-	if (moveDown)
-		moveForce.add(new Vector2D(0, 1));
-	if (moveRight)
-		moveForce.add(new Vector2D(1, 0));
-	if (moveLeft)
-		moveForce.add(new Vector2D(-1, 0));
-
-	moveForce.mult(speed);	
-}
-
-function applyMovementForce(speed) {
-	createMovementForce(speed);
-	player.applyForce(moveForce);
-	moveForce.mult(0); // reset movement force
-}
 
 
 

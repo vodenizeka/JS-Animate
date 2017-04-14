@@ -4,14 +4,15 @@
 	<meta charset="UTF-8">
 	<title>Title</title>
 	<script src="player.js"> </script>
+	<script src="particle.js"> </script>
 	<script src="gravityField.js"> </script>
 	<script src="simulation.js"> </script>
 	<script src="../MyLib/vector2D.js"> </script>
 	<script>
 
 		var canvas = document.createElement("canvas");
-		canvas.width = 400;
-		canvas.height = 400;
+		canvas.width = 600;
+		canvas.height = 600;
 
 		var c = canvas.getContext("2d");
 
@@ -30,18 +31,12 @@
 			edgeBounce = 0.8,
 			airDragConst = 0.01;
 	
-		var antiGravity = [];
-		var antiGravityNum = 2;
-		for (let i = 0; i < antiGravityNum; i++) {
-			if (i % 2 == 0) {
-			antiGravity[i] = new GravityField(50 + i*100, 0, 50, canvas.height, 
-							-2*gravity.x, -2*gravity.y, (i+1)*75);
-			}
-			else {
-			antiGravity[i] = new GravityField(0, 50 + i*100, canvas.width, 50, 
-							2*gravity.y, -2*gravity.x, 360);
-			}
-		}
+		var gravityFields = [];
+		gravityFields[0] = new GravityField(20, 50, 25, 400, 0, -0.05, 120, 200);	
+		gravityFields[1] = new GravityField(100, 500, 400, 35, 0.05, 0, 240, 200);	
+		gravityFields[2] = new GravityField(100, 100, 400, 300, 0.15, -0.13, 40, 200);	
+		var gravityFieldsNum = gravityFields.length;
+
 		
 		window.onload = function() {
 			document.body.appendChild(canvas);
@@ -56,11 +51,11 @@
 		function drawBackground() {
 			c.fillStyle = "black";
 			c.fillRect(0, 0, canvas.width, canvas.height);
-			for (let i = 0; i < antiGravityNum; i++) {
-				c.fillStyle = "hsla(120, 100%, 50%, 0.5)";
-				c.fillRect(antiGravity[i].pos.x, antiGravity[i].pos.y, 
-						   antiGravity[i].width, antiGravity[i].height);
-			}
+		}
+
+		function drawGravityFields() {
+			for (let i = 0; i < gravityFieldsNum; i++)	
+				gravityFields[i].draw();
 		}
 
 	</script>

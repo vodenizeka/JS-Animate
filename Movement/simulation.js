@@ -13,28 +13,18 @@ Simulation = {
 	},
 
 	update : function() {
-		applyMovementForce(playerSpeed);			
-
-		//apply anti-gravity forces
-		for (let i = 0; i < antiGravityNum; i++) {
-			if (antiGravity[i].isPlayerInside(player))
-				player.applyForce(antiGravity[i].force);
-		}
-		if (gravityOn)
-			player.applyForce(gravity);
-
-		var airDrag = player.vel.clone();
-		airDrag.mult(-airDragConst);
-		player.applyForce(airDrag);
-
-
-		player.vel.limit(maxSpeed);
+		applyAllForces();		
 		player.move();
 		player.edge();
+		player.vel.limit(maxSpeed);
+		player.acc.mult(0);  // reset acceleration
+
+		updateGravityFields();
 	},
 
 	draw : function() {
 		drawBackground();
+		drawGravityFields();
 		player.draw();
 		player.vel.draw(player.pos.x, player.pos.y, 20);
 	}
