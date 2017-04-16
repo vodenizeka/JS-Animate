@@ -7,6 +7,11 @@ function Vector2D(x, y) {
 		this.y += vector.y;
 	};
 
+	this.sub = function(vector) {
+		this.x -= vector.x;
+		this.y -= vector.y;
+	};
+
 	this.mult = function(number) {
 		this.x *= number;
 		this.y *= number;
@@ -50,12 +55,18 @@ function Vector2D(x, y) {
 		return new Vector2D(this.x, this.y);
 	};
 
-	this.set = function(x,y) {
+	this.set = function(x, y) {
 		this.x = x;
 		this.y = y;
 	};
+
+	this.setVector = function(vector) {
+		this.x = vector.x;
+		this.y = vector.y;
+	};
 }
 
+// ???
 function initVectors2D(number) {
 	for (var i = 0; i < number; i++) {
 		for (var j = 0; j < number; j++) {

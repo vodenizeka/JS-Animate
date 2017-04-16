@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
+	<title>Movement</title>
 	<script src="player.js"> </script>
 	<script src="particle.js"> </script>
 	<script src="gravityField.js"> </script>
 	<script src="simulation.js"> </script>
 	<script src="../MyLib/vector2D.js"> </script>
 	<script>
-
 		var canvas = document.createElement("canvas");
 		canvas.width = 800;
 		canvas.height = 640;
@@ -26,6 +25,7 @@
 			edgeFriction = 0.9,
 			edgeBounce = 0.5,
 			airDragConst = 0.5;
+		var testBox = new Box(0, 0, canvas.width, canvas.height);
 	
 		var gravityFields = [];
 		gravityFields[0] = new GravityField(175, 250, 350, 150, 0, -2100, 120, 100);	
@@ -37,14 +37,12 @@
 		window.onload = function() {
 			document.body.appendChild(canvas);
 			
-			player.vel = new Vector2D(4, -5);
-
 			Simulation.then = Date.now();
 			Simulation.frame();
 		}
 		
 		function drawBackground() {
-			c.fillStyle = "rgba(0,0,0,0.09)";
+			c.fillStyle = "rgba(0,0,0,0.1)";
 			c.fillRect(0, 0, canvas.width, canvas.height);
 		}
 

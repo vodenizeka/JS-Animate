@@ -1,4 +1,5 @@
 function GravityField(posX, posY, width, height, forceX, forceY, color, particleNum) {
+	this.box = new Box(posX, posY, width, height);
 	this.pos = new Vector2D(posX, posY);	
 	this.force = new Vector2D(forceX, forceY);
 	this.width = width;
@@ -18,8 +19,10 @@ function GravityField(posX, posY, width, height, forceX, forceY, color, particle
 	};
 
 	this.update = function() {
-		for (let i = 0; i < this.particleNum; i++) 
+		for (let i = 0; i < this.particleNum; i++) {
 			this.particles[i].update(this.force);
+			constrainInBox(this.particles[i], testBox, "flow");
+		}
 	};
 
 	this.draw = function() {

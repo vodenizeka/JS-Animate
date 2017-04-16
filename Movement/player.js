@@ -2,6 +2,9 @@ function Player(x, y) {
 	this.pos = new Vector2D(x, y);	
 	this.vel = new Vector2D(0, 0);	
 	this.acc = new Vector2D(0, 0);	
+	this.velPerSec = new Vector2D(0, 0);	
+	this.accPerSec = new Vector2D(0, 0);	
+	
 	
 	this.color = "white";
 	this.radius = 10;
@@ -9,6 +12,11 @@ function Player(x, y) {
 	this.thrustCharging = false;
 	this.thrustPower = 0;
 	this.thrustIncrease = 400;
+
+	this.mouseThrustCharging = false;
+	this.mouseThrustPower = 0;
+	this.mouseThrustIncrease = 2000;
+	this.mouseVector = new Vector2D(0, 0); 
 	
 	this.maxSpeed = 1000;
 
@@ -20,12 +28,16 @@ function Player(x, y) {
 	this.moveLeft = false;
 
 	this.move = function() {
-		var accPerSec = this.acc.clone();
-		var velPerSec = this.vel.clone();
-		accPerSec.mult(Simulation.delta);
-		velPerSec.mult(Simulation.delta);
-		this.vel.add(accPerSec);
-		this.pos.add(velPerSec);
+		this.accPerSec.setVector(this.acc);
+		this.velPerSec.setVector(this.vel);
+
+		this.accPerSec.mult(Simulation.delta);
+		this.velPerSec.mult(Simulation.delta);
+
+		this.vel.add(this.accPerSec);
+		this.vel.limit(this.maxSpeed);
+		this.pos.add(this.velPerSec);
+		this.acc.mult(0);
 	};
 
 	this.edge = function() {
@@ -56,7 +68,7 @@ function Player(x, y) {
 	}
 	
 	this.applyForce = function(force) {
-		this.acc.add(force)
+		this.acc.add(force);
 	};
 
 	this.updateMovement = function() {
@@ -84,6 +96,16 @@ function Player(x, y) {
 			thrustForce.mult(this.thrustPower);
 			this.applyForce(thrustForce);
 			this.thrustPower = 0;
+		}
+		if (this.mouseThrustCharging) {
+			this.mouseThrustPower += this.mouseThrustIncrease;
+		}
+		else if (this.mouseThrustPower) {
+			this.mouseVector.sub(this.pos);
+			this.mouseVector.normalize();
+			this.mouseVector.mult(this.mouseThrustPower);
+			this.applyForce(this.mouseVector);
+			this.mouseThrustPower = 0;
 		}
 	};
 
@@ -159,6 +181,7 @@ window.addEventListener("keyup", function(e) {
 	}
 }, false);
 
+
 // Thrust movement
 window.addEventListener("keydown", function(e) {
 	if (e.keyCode === 32) 
@@ -168,6 +191,21 @@ window.addEventListener("keydown", function(e) {
 window.addEventListener("keyup", function(e) {
 	if (e.keyCode === 32) 
 		player.thrustCharging = false;
+}, false);
+
+
+// Mouse thrust movement
+window.addEventListener("mousedown", function(e) {
+	if (e.button === 0) {
+		player.mouseThrustCharging = true;	
+	}
+}, false);
+
+window.addEventListener("mouseup", function(e) {
+	if (e.button === 0) {
+		player.mouseThrustCharging = false;	
+		player.mouseVector.set(e.clientX, e.clientY);
+	}
 }, false);
 
 

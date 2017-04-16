@@ -16,8 +16,6 @@ Simulation = {
 		applyAllForces();		
 		player.move();
 		player.edge();
-		player.vel.limit(player.maxSpeed);
-		player.acc.mult(0);  // reset acceleration
 
 		updateGravityFields();
 	},
