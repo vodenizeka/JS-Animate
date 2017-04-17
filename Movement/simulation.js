@@ -15,7 +15,7 @@ Simulation = {
 	update : function() {
 		applyAllForces();		
 		player.move();
-		player.edge();
+		constrainInBox(player, canvasBox, "bounce");
 
 		updateGravityFields();
 	},

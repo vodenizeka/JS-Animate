@@ -5,9 +5,9 @@ function Player(x, y) {
 	this.velPerSec = new Vector2D(0, 0);	
 	this.accPerSec = new Vector2D(0, 0);	
 	
-	
 	this.color = "white";
-	this.radius = 10;
+	this.size = 10;
+	this.edgeBounce = 0.5;
 
 	this.thrustCharging = false;
 	this.thrustPower = 0;
@@ -42,23 +42,23 @@ function Player(x, y) {
 
 	this.edge = function() {
 		var bounce = false;
-		if (this.pos.x > canvas.width - this.radius) {
-			this.pos.x = canvas.width - this.radius;
+		if (this.pos.x > canvas.width - this.size) {
+			this.pos.x = canvas.width - this.size;
 			this.vel.x *= -edgeBounce;
 			bounce = true;
 		}
-		if (this.pos.x < this.radius) {
-			this.pos.x = this.radius;
+		if (this.pos.x < this.size) {
+			this.pos.x = this.size;
 			this.vel.x *= -edgeBounce;
 			bounce = true;
 		}
-		if (this.pos.y > canvas.height - this.radius) {
-			this.pos.y = canvas.height - this.radius;
+		if (this.pos.y > canvas.height - this.size) {
+			this.pos.y = canvas.height - this.size;
 			this.vel.y *= -edgeBounce;
 			bounce = true;
 		}
-		if (this.pos.y < this.radius) {
-			this.pos.y = this.radius;
+		if (this.pos.y < this.size) {
+			this.pos.y = this.size;
 			this.vel.y *= -edgeBounce;
 			bounce = true;
 		}
@@ -69,6 +69,14 @@ function Player(x, y) {
 	
 	this.applyForce = function(force) {
 		this.acc.add(force);
+	};
+
+	this.accTo = function(point) {
+		var force = point.clone();
+		force.sub(this.pos);
+		force.normalize();
+		force.mult(this.moveSpeed);
+		this.applyForce(force);
 	};
 
 	this.updateMovement = function() {
@@ -118,7 +126,7 @@ function Player(x, y) {
 	this.draw = function() {
 		c.fillStyle = this.color;
 		c.beginPath();
-		c.arc(this.pos.x, this.pos.y, this.radius, 0, 2*Math.PI, false);
+		c.arc(this.pos.x, this.pos.y, this.size, 0, 2*Math.PI, false);
 		c.fill();
 	};
 }
@@ -126,14 +134,19 @@ function Player(x, y) {
 function applyAllForces() {
 	player.applyMovementForces();			
 
-	//apply anti-gravity forces
-	for (let i = 0; i < gravityFieldsNum; i++) {
-		if (gravityFields[i].isInside(player))
-			player.applyForce(gravityFields[i].force);
-	}
+	// apply anti-gravity forces
+	for (let gravity of gravityFields)
+		if (gravity.box.contains(player))
+			player.applyForce(gravity.force);
+
+	// apply gravity point forces
+	for (let gravity of gravityPoints)
+		player.applyForce(gravity.force(player));
 
 	if (gravityOn)
 		player.applyForce(gravity);
+	if (mouseOn)
+		player.accTo(mouse);
 
 	var airDrag = player.vel.clone();
 	airDrag.mult(-airDragConst);
@@ -196,9 +209,8 @@ window.addEventListener("keyup", function(e) {
 
 // Mouse thrust movement
 window.addEventListener("mousedown", function(e) {
-	if (e.button === 0) {
+	if (e.button === 0) 
 		player.mouseThrustCharging = true;	
-	}
 }, false);
 
 window.addEventListener("mouseup", function(e) {

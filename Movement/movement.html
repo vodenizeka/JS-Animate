@@ -8,6 +8,7 @@
 	<script src="gravityField.js"> </script>
 	<script src="simulation.js"> </script>
 	<script src="../MyLib/vector2D.js"> </script>
+	<script src="../Bounce/balls.js"> </script>
 	<script>
 		var canvas = document.createElement("canvas");
 		canvas.width = 800;
@@ -21,18 +22,25 @@
 
 		var	gravity = new Vector2D(0, 500),
 			gravityOn = true,
+			mouseOn = false,
 			maxSpeed = 2000,
 			edgeFriction = 0.9,
 			edgeBounce = 0.5,
 			airDragConst = 0.5;
-		var testBox = new Box(0, 0, canvas.width, canvas.height);
+		var canvasBox = new Box(0, 0, canvas.width, canvas.height);
 	
 		var gravityFields = [];
-		gravityFields[0] = new GravityField(175, 250, 350, 150, 0, -2100, 120, 100);	
-		gravityFields[1] = new GravityField(375, 30, 200, 130, -1000, 0, 240, 100);	
-		gravityFields[2] = new GravityField(50, 50, 200, 150, 1000, -1200, 10, 100);	
-		var gravityFieldsNum = gravityFields.length;
+//		gravityFields[0] = new GravityField(175, 250, 350, 150, 0, -2100, 120, 100);	
+//		gravityFields[1] = new GravityField(375, 30, 200, 130, -1000, 0, 240, 100);	
+//		gravityFields[2] = new GravityField(50, 50, 200, 150, 1000, -1200, 10, 100);	
 
+		var gravityPoints = [];
+		gravityPoints[0] = new GravityPoint(700, 300, 100000, 10);
+		gravityPoints[1] = new GravityPoint(100, 200, 100000, 10);
+		gravityPoints[2] = new GravityPoint(300, 400, 100000, 10);
+		gravityPoints[3] = new GravityPoint(500, 100, 100000, 10);
+
+		var mouse = new Vector2D(0, 0);
 		
 		window.onload = function() {
 			document.body.appendChild(canvas);
@@ -47,9 +55,32 @@
 		}
 
 		function drawGravityFields() {
-			for (let i = 0; i < gravityFieldsNum; i++)	
-				gravityFields[i].draw();
+			for (let gravity of gravityFields)	
+				gravity.draw();
+			for (let gravity of gravityPoints)	
+				gravity.draw();
 		}
+
+		window.addEventListener("mousemove", function(e) {
+			mouse.set(e.clientX, e.clientY);
+		}, false);
+
+		window.addEventListener("keydown", function(e) {
+			// G pressed
+			if (e.keyCode === 71) {
+				if (gravityOn)
+					gravityOn = false;
+				else
+					gravityOn = true;
+			}
+			// M pressed
+			if (e.keyCode === 77) {
+				if (mouseOn)
+					mouseOn = false;
+				else
+					mouseOn = true;
+			}
+		}, false);
 
 	</script>
 </head>
