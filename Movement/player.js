@@ -1,3 +1,8 @@
+function NewPlayer(x, y) {
+	Particle.call(this, x, y);
+	
+}
+
 function Player(x, y) {
 	this.pos = new Vector2D(x, y);	
 	this.vel = new Vector2D(0, 0);	
@@ -26,110 +31,83 @@ function Player(x, y) {
 	this.moveDown = false;
 	this.moveRight = false;
 	this.moveLeft = false;
-
-	this.move = function() {
-		this.accPerSec.setVector(this.acc);
-		this.velPerSec.setVector(this.vel);
-
-		this.accPerSec.mult(Simulation.delta);
-		this.velPerSec.mult(Simulation.delta);
-
-		this.vel.add(this.accPerSec);
-		this.vel.limit(this.maxSpeed);
-		this.pos.add(this.velPerSec);
-		this.acc.mult(0);
-	};
-
-	this.edge = function() {
-		var bounce = false;
-		if (this.pos.x > canvas.width - this.size) {
-			this.pos.x = canvas.width - this.size;
-			this.vel.x *= -edgeBounce;
-			bounce = true;
-		}
-		if (this.pos.x < this.size) {
-			this.pos.x = this.size;
-			this.vel.x *= -edgeBounce;
-			bounce = true;
-		}
-		if (this.pos.y > canvas.height - this.size) {
-			this.pos.y = canvas.height - this.size;
-			this.vel.y *= -edgeBounce;
-			bounce = true;
-		}
-		if (this.pos.y < this.size) {
-			this.pos.y = this.size;
-			this.vel.y *= -edgeBounce;
-			bounce = true;
-		}
-
-		if (bounce)
-			this.vel.mult(edgeFriction);
-	}
-	
-	this.applyForce = function(force) {
-		this.acc.add(force);
-	};
-
-	this.accTo = function(point) {
-		var force = point.clone();
-		force.sub(this.pos);
-		force.normalize();
-		force.mult(this.moveSpeed);
-		this.applyForce(force);
-	};
-
-	this.updateMovement = function() {
-		var x = 0, y = 0;
-		if (this.moveUp)
-			y -= 1;
-		if (this.moveDown)
-			y += 1;
-		if (this.moveRight)
-			x += 1;
-		if (this.moveLeft)
-			x -= 1;
-
-		this.moveVector.set(x, y);
-		this.moveVector.mult(this.moveSpeed);
-	};
-
-	this.thrust = function() {
-		if (this.thrustCharging) {
-			this.thrustPower += this.thrustIncrease;
-		}
-		else if (this.thrustPower) {
-			var thrustForce = this.vel.clone();
-			thrustForce.normalize();
-			thrustForce.mult(this.thrustPower);
-			this.applyForce(thrustForce);
-			this.thrustPower = 0;
-		}
-		if (this.mouseThrustCharging) {
-			this.mouseThrustPower += this.mouseThrustIncrease;
-		}
-		else if (this.mouseThrustPower) {
-			this.mouseVector.sub(this.pos);
-			this.mouseVector.normalize();
-			this.mouseVector.mult(this.mouseThrustPower);
-			this.applyForce(this.mouseVector);
-			this.mouseThrustPower = 0;
-		}
-	};
-
-	this.applyMovementForces = function() {
-		this.updateMovement();
-		this.applyForce(this.moveVector);
-		this.thrust();
-	};
-
-	this.draw = function() {
-		c.fillStyle = this.color;
-		c.beginPath();
-		c.arc(this.pos.x, this.pos.y, this.size, 0, 2*Math.PI, false);
-		c.fill();
-	};
 }
+
+Player.prototype.move = function() {
+	this.accPerSec.setVector(this.acc);
+	this.velPerSec.setVector(this.vel);
+
+	this.accPerSec.mult(Simulation.delta);
+	this.velPerSec.mult(Simulation.delta);
+
+	this.vel.add(this.accPerSec);
+	this.vel.limit(this.maxSpeed);
+	this.pos.add(this.velPerSec);
+	this.acc.mult(0);
+};
+	
+Player.prototype.applyForce = function(force) {
+	this.acc.add(force);
+};
+
+Player.prototype.accTo = function(point) {
+	var force = point.clone();
+	force.sub(this.pos);
+	force.normalize();
+	force.mult(this.moveSpeed);
+	this.applyForce(force);
+};
+
+Player.prototype.updateMovement = function() {
+	var x = 0, y = 0;
+	if (this.moveUp)
+		y -= 1;
+	if (this.moveDown)
+		y += 1;
+	if (this.moveRight)
+		x += 1;
+	if (this.moveLeft)
+		x -= 1;
+
+	this.moveVector.set(x, y);
+	this.moveVector.mult(this.moveSpeed);
+};
+
+Player.prototype.thrust = function() {
+	if (this.thrustCharging) {
+		this.thrustPower += this.thrustIncrease;
+	}
+	else if (this.thrustPower) {
+		var thrustForce = this.vel.clone();
+		thrustForce.normalize();
+		thrustForce.mult(this.thrustPower);
+		this.applyForce(thrustForce);
+		this.thrustPower = 0;
+	}
+	if (this.mouseThrustCharging) {
+		this.mouseThrustPower += this.mouseThrustIncrease;
+	}
+	else if (this.mouseThrustPower) {
+		this.mouseVector.sub(this.pos);
+		this.mouseVector.normalize();
+		this.mouseVector.mult(this.mouseThrustPower);
+		this.applyForce(this.mouseVector);
+		this.mouseThrustPower = 0;
+	}
+};
+
+Player.prototype.applyMovementForces = function() {
+	this.updateMovement();
+	this.applyForce(this.moveVector);
+	this.thrust();
+};
+
+Player.prototype.draw = function() {
+	c.fillStyle = this.color;
+	c.beginPath();
+	c.arc(this.pos.x, this.pos.y, this.size, 0, 2*Math.PI, false);
+	c.fill();
+};
 
 function applyAllForces() {
 	player.applyMovementForces();			

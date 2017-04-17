@@ -7,45 +7,45 @@ function Particle(x, y) {
 
 	this.maxSpeed = 300;
 	this.edgeBounce = 1;
-	this.color = "hsla(260, 100%, 80%, 1)";
+	this.color = "white";
 	this.size = 3;
-
-	this.move = function() {
-		this.accPerSec.setVector(this.acc);
-		this.velPerSec.setVector(this.vel);
-
-		this.accPerSec.mult(Simulation.delta);
-		this.velPerSec.mult(Simulation.delta);
-
-		this.vel.add(this.accPerSec);
-		this.vel.limit(this.maxSpeed);
-		this.pos.add(this.velPerSec);
-		this.acc.mult(0);
-	};
-	
-	this.applyForce = function(force) {
-		this.acc.add(force)
-	};
-
-	this.draw = function() {
-		c.fillStyle = this.color;
-		c.fillRect(this.pos.x, this.pos.y, this.size, this.size);
-	};
 }
+
+Particle.prototype.move = function() {
+	this.accPerSec.setVector(this.acc);
+	this.velPerSec.setVector(this.vel);
+
+	this.accPerSec.mult(Simulation.delta);
+	this.velPerSec.mult(Simulation.delta);
+
+	this.vel.add(this.accPerSec);
+	this.vel.limit(this.maxSpeed);
+	this.pos.add(this.velPerSec);
+	this.acc.mult(0);
+};
+
+Particle.prototype.applyForce = function(force) {
+	this.acc.add(force)
+};
+
+Particle.prototype.draw = function() {
+	c.fillStyle = this.color;
+	c.fillRect(this.pos.x, this.pos.y, this.size, this.size);
+};
 
 function Box(x, y, width, height) {
 	this.pos = new Vector2D(x, y);
 	this.size = new Vector2D(width, height);
+}
 
-	this.contains = function(particle) {
-		if (particle.pos.x >= this.pos.x && 
-			particle.pos.x <= this.pos.x + this.size.x &&
-			particle.pos.y >= this.pos.y &&
-			particle.pos.y <= this.pos.y + this.size.y)
-			return true;
-		else
-			return false;
-	}
+Box.prototype.contains = function(particle) {
+	if (particle.pos.x >= this.pos.x && 
+		particle.pos.x <= this.pos.x + this.size.x &&
+		particle.pos.y >= this.pos.y &&
+		particle.pos.y <= this.pos.y + this.size.y)
+		return true;
+	else
+		return false;
 }
 
 function constrainInBox(particle, box, mode) {
